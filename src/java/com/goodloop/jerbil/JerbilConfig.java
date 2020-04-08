@@ -17,6 +17,11 @@ public class JerbilConfig {
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
+	public JerbilConfig setProjectdir(File projectdir) {
+		this.projectdir = projectdir;
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		try {
@@ -67,6 +72,9 @@ public class JerbilConfig {
 
 	@Option(description="If you just wish to process a single file")
 	public File inputFile;
+
+	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
+	public boolean useJS;
 
 	public File getWebRootDir() {
 		return new File(projectdir, webroot);

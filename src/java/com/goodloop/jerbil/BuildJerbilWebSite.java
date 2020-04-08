@@ -41,10 +41,7 @@ public class BuildJerbilWebSite extends BuildTask {
 	}
 	
 	public BuildJerbilWebSite(File projectDir) {
-		config = new JerbilConfig();
-		config.projectdir = projectDir;
-		pages = config.getPagesDir();
-		webroot = config.getWebRootDir();
+		this(new JerbilConfig().setProjectdir(projectDir));
 	}
 	
 	public BuildJerbilWebSite(JerbilConfig config) {
@@ -115,7 +112,7 @@ public class BuildJerbilWebSite extends BuildTask {
 		bjp.run();		
 	}
 
-	private void doTask3_CSV(File csvFile) {
+	void doTask3_CSV(File csvFile) {
 		try {
 			CSVSpec spec = new CSVSpec();
 			CSVReader r = new CSVReader(csvFile,spec);
@@ -124,11 +121,18 @@ public class BuildJerbilWebSite extends BuildTask {
 			// TODO case etc flexible header handling (as SoGive's csv code does)
 			// 2 stage templating?
 			File mdtemplateFile = getSrcTemplate(csvFile);
-			String mdtemplate = mdtemplateFile != null? FileUtils.read(mdtemplateFile) : null;
+			String mdtemplate;
+			if (mdtemplateFile != null) {
+				mdtemplate = FileUtils.read(mdtemplateFile);
+				Log.d(LOGTAG, ".csv "+csvFile+" - Using template file "+mdtemplateFile);
+			} else {
+				mdtemplate = ""; // blank
+				Log.d(LOGTAG, ".csv "+csvFile+" - blank template");
+			}
 			
 			for (String[] row : r) {
 				if (row.length==0) continue;
-				doTask4_CSV_row(csvFile, header, mdtemplate, row, r.getLineNumber());
+				doTask4_CSV_row(csvFile, header, mdtemplate, row, r.getRowNumber());
 			}
 		} catch(Exception ex) {
 			Log.e(ex+" from "+csvFile); // TODO better error handling in Jerbil??
@@ -136,6 +140,7 @@ public class BuildJerbilWebSite extends BuildTask {
 	}
 
 	private void doTask4_CSV_row(File csvFile, String[] header, String mdtemplate, String[] row, int rowNum) {
+		assert mdtemplate != null;
 		// turn a row into a map of key:value variables
 		HashMap map = new HashMap();
 		for (int i = 0; i < header.length; i++) {
@@ -146,23 +151,35 @@ public class BuildJerbilWebSite extends BuildTask {
 			hi = hi.replaceAll("\\W+", ""); // no punctuation
 			map.put(hi, row[i]);
 		}
-		String srcText = Printer.toString(map, "\n", ":");
-		srcText = StrUtils.substring(srcText, 1, -1); // chop the wrappping {}
+		
+		// HACK
+		String name = (String) map.get("worker");
+		CSVReader r = new CSVReader(new File(csvFile.getParentFile(), "contact-details.csv"));
+		Iterable<Map<String, String>> maps = r.asListOfMaps();
+		for (Map<String, String> map2 : maps) {
+			address
+			email
+		}
+//		String srcText = Printer.toString(map, "\n", ":");
+//		srcText = StrUtils.substring(srcText, 1, -1); // chop the wrappping {}
 		
 		// now process into the template
-		// ...2 stage template? .md then .html?				
-		if (mdtemplate != null) {
-			srcText += "\n\n"+mdtemplate;
-		}
+//		// ...2 stage template? .md then .html?				
+//		if (mdtemplate != null) {
+//			srcText += "\n\n"+mdtemplate;
+//		}
 		// ...normal
 		File out = getOutputFileForSource(csvFile);				
-		out = FileUtils.changeType(out, rowNum+row[0]+".html");
+		out = FileUtils.changeType(out, rowNum+FileUtils.safeFilename(row[0].trim(), false)+".html");		
 		File template = getTemplate(out);
 		assert template != null : "No html template?! "+webroot;
 		// ...run
-		BuildJerbilPage bjp = new BuildJerbilPage(csvFile, srcText, out, template);
-		Map<String, String> vars = config.var;
+		BuildJerbilPage bjp = new BuildJerbilPage(csvFile, mdtemplate, out, template);
+		// combine base vars and csv vars
+		Map<String, String> vars = new HashMap(config.var);
+		vars.putAll(map);		
 		bjp.setBaseVars(vars);
+		// run
 		bjp.run();
 	}
 

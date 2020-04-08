@@ -93,4 +93,11 @@ public class Markdown {
 		return earliest;
 	}
 
+	public static String renderWithoutWrapper(String string) {
+		String mds = render(string);
+		mds = mds.replaceFirst("^<[^>]+>", "");
+		mds = mds.replaceFirst("</[a-zA-Z]+>$", "");
+		return mds.trim();
+	}
+
 }

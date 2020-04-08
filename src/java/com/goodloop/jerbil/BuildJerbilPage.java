@@ -13,9 +13,11 @@ import com.winterwell.utils.Dep;
 import com.winterwell.utils.Environment;
 import com.winterwell.utils.IReplace;
 import com.winterwell.utils.Printer;
+import com.winterwell.utils.SimpleTemplateVars;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
 import com.winterwell.utils.containers.ArrayMap;
+import com.winterwell.utils.containers.Containers;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.log.Log;
 import com.winterwell.utils.time.Time;
@@ -35,7 +37,9 @@ public class BuildJerbilPage {
 	private File template;
 	private Map<String, String> baseVars = new ArrayMap();
 	private String srcText;
-
+	
+	JerbilConfig config = Dep.get(JerbilConfig.class);
+	
 	/**
 	 * 
 	 * @param src e.g. pages/mypage.md
@@ -205,7 +209,7 @@ public class BuildJerbilPage {
 		
 		// 4. a webroot file
 		File outDir = out.getParentFile();
-		JerbilConfig config = Dep.get(JerbilConfig.class);
+		
 		File webroot = config.getWebRootDir();
 		while(outDir!=null) {
 			File wf = new File(outDir, insert);
@@ -222,8 +226,7 @@ public class BuildJerbilPage {
 	}
 
 	private String addJerbilVersionMarker(String html) {
-		JerbilConfig jc = Dep.get(JerbilConfig.class);
-		if (jc.noJerbilMarker) return html;
+		if (config.noJerbilMarker) return html;
 		String v = Environment.get().get(new SField("jerbil.version"));
 		String markerInfo = "<meta name='generator' content='Jerbil v"+v+"' />\n";
 		html = html.replace("</head>", markerInfo+"</head>");
@@ -231,7 +234,7 @@ public class BuildJerbilPage {
 		return html;
 	}
 
-	private String insertVariables(String html, String page, Map<String,Object> var) {
+	String insertVariables(String html, String page, Map<String,Object> var) {
 		// TODO key: value at the top of file -> javascript jerbil.key = value variables
 		// TODO files -> safely restricted file access??
 		html = html.replace("$generator", "Jerbil version "+JerbilConfig.VERSION);
@@ -245,36 +248,15 @@ public class BuildJerbilPage {
 		if ( ! var.containsKey("modtime")) {
 			var.put("modtime", new Time(modtime).toString());
 		}
-		// TODO use SimpleTemplateVars.java. It handles urls nicely.
-		// First, word boundaries
-		for(String k : var.keySet()) {
-			try {
-				Object v = var.get(k);			
-				// slightly recursive HACK
-				int cnt=0;
-				while(var.containsKey(v)) {
-					v = var.get(v);
-					// avoid loops
-					cnt++;
-					if (cnt>10) break;
-				}
-				// make the value regex and html safe
-				String vs = escapeValue(v);
-				
-				String ps = "\\$"+Pattern.quote(k)+"\\b";
-				html = html.replaceAll(ps, vs);
-			} catch(Exception ex) {
-				// Paranoia: it should not be possible to upset the regex handling above.
-				Log.e(LOGTAG, ex+" from ["+k+"] in "+src);
-			}
-		}
-		// now anything goes
-		for(String k : var.keySet()) {
-			Object v = var.get(k);
-			String vs = escapeValue(v);
-			html = html.replace("$"+k, vs);
-		}
-		return html;
+		
+		// convert var values to Markdown		
+		Map<String, Object> mdvars = Containers.applyToValues(
+				v -> v instanceof String? Markdown.renderWithoutWrapper((String)v) : v, var);
+		
+		SimpleTemplateVars stv = new SimpleTemplateVars(mdvars);
+		stv.setUseJS(config.useJS);
+		String html2 = stv.process(html);
+		return html2;
 	}
 
 	/**
