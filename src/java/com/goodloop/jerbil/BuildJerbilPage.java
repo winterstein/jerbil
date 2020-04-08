@@ -39,6 +39,7 @@ public class BuildJerbilPage {
 	private String srcText;
 	
 	JerbilConfig config = Dep.get(JerbilConfig.class);
+	private Map<String, String> vars;
 	
 	/**
 	 * 
@@ -111,7 +112,10 @@ public class BuildJerbilPage {
 			// or https://github.com/atlassian/commonmark-java
 			srcPage = Markdown.render(srcPage);
 		}
-		
+		// override markdown key:value header values? use-case: csv
+		if (vars!=null) {
+			var.putAll(vars);
+		}
 		// Variables
 		String html = insertVariables(templateHtml, srcPage, var);
 		
@@ -285,8 +289,20 @@ public class BuildJerbilPage {
 		}
 	}
 
+	/**
+	 * Base vars can be over-ridden by values in the markdown file
+	 * @param vars
+	 */
 	public void setBaseVars(Map<String, String> vars) {
 		baseVars = new HashMap(vars); // paranoid copy
+	}
+
+	/**
+	 * vars do NOT get overridden
+	 * @param vars
+	 */
+	public void setVars(Map<String, String> vars) {
+		this.vars = new HashMap(vars);
 	}
 	
 }

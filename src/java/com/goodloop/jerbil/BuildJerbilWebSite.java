@@ -12,6 +12,7 @@ import com.winterwell.bob.BuildTask;
 import com.winterwell.utils.Printer;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
+import com.winterwell.utils.containers.ArrayMap;
 import com.winterwell.utils.containers.Containers;
 import com.winterwell.utils.io.CSVReader;
 import com.winterwell.utils.io.CSVSpec;
@@ -142,32 +143,97 @@ public class BuildJerbilWebSite extends BuildTask {
 	private void doTask4_CSV_row(File csvFile, String[] header, String mdtemplate, String[] row, int rowNum) {
 		assert mdtemplate != null;
 		// turn a row into a map of key:value variables
-		HashMap map = new HashMap();
+		HashMap<String,String> map = new HashMap();
 		for (int i = 0; i < header.length; i++) {
 			String hi = header[i];
 			if (Utils.isBlank(hi)) continue;
 			hi = hi.trim();
 			hi = hi.replaceAll("\\s+", "_"); // no whitespace in variable names
 			hi = hi.replaceAll("\\W+", ""); // no punctuation
-			map.put(hi, row[i]);
+			String ri = row[i].trim();
+			map.put(hi, ri);
 		}
 		
 		// HACK
+		// rm blanks
+		for(Object k : map.keySet().toArray()) {
+			if (Utils.isBlank(map.get(k))) {
+				map.remove(k);
+			}
+		}
 		String name = (String) map.get("worker");
+		if (name.startsWith("X")) {
+			return; // skip
+		}
+		if (name.startsWith("Stuart Hands")) name = "Stuart Hands";
+		if (name.contains("Tunnicli")) name = "Tunnicliffe";
+		if (name.contains("Kerslake")) name = "Kerslake";
+		if (name.contains("Rainey")) name = "Rainey";
 		CSVReader r = new CSVReader(new File(csvFile.getParentFile(), "contact-details.csv"));
 		Iterable<Map<String, String>> maps = r.asListOfMaps();
-		for (Map<String, String> map2 : maps) {
-			address
-			email
+		Map<String, String> details = null;
+		for (Map<String, String> m : maps) {
+			String ms = Printer.toString(m);
+			if (ms.contains(name)) {
+				details = m;
+				break;
+			}
 		}
-//		String srcText = Printer.toString(map, "\n", ":");
-//		srcText = StrUtils.substring(srcText, 1, -1); // chop the wrappping {}
+		if (name.contains("Durkin")) {
+			details = new ArrayMap("Email address", "40456755@live.napier.ac.uk",
+					"Home address",
+					"1 Tweed Avenue, Peebles, Edinburgh, EH45 8AS");
+		}
+		if (details!=null) {
+			map.put("workerEmail", details.get("Email address"));
+			String address = details.get("Home address");
+			map.put("workerAddress", address);
+			if (address.contains("London") || name.contains("Amy") ||
+				name.contains("Julia") || name.contains("Stu") || name.contains("Tunni")
+				|| name.contains("Rainey")) 
+			{
+				map.put("city", "London");
+				map.put("jurisdiction", "England and Wales");
+				map.put("jurisdictionAdj", "English");
+				map.put("scotlandStyle", "display:hidden;");
+			} else if (address.contains("Edinburgh") || address.contains("EH")) {
+				map.put("witness", "## Witness\n\n"
+				+"Note: The witness is not a party to the contract, and does not have to read or agree with it.\n\n"
+				+"> As a witness, I confirm that the signature above was made by the Employee "+map.get("worker")+" agreeing to this contract.\n\n" 
+				+"<div style='height:100px;'></div>\n\n"
+				+"### Full name, home address and occupation of witness\n\n"
+				+"Daniel Robert Appel   \n"
+				+"3 Flat 1 New Mart Place, Edinburgh, EH14 1RW    \n"
+				+"Systems Administrator\n\n");
+			} else {							
+				Log.e(LOGTAG, "What country?! "+name+address);
+			}
+			if (name.startsWith("Amy") || name.contains("Winterstein")) {
+				map.put("noticePeriod", "3 months");
+				map.put("restrictionPeriod", "12 months");
+			}
+		} else {
+			Log.e(LOGTAG, "Who?! "+name);
+		}
+		String bs = (String) map.get("baseSalary");
+		if (bs!=null && ! bs.startsWith("£")) {
+			map.put("baseSalary", "£"+bs);
+		}
+		String ds = (String) map.get("discretionarySalary");
+		if ( ! Utils.isBlank(ds) && ! ds.startsWith("£")) {
+			map.put("discretionarySalary", "**£"+ds+"**");
+		}
+		if ( ! map.containsKey("discretionarySalary")) {
+			map.put("discretionarySalary", "£0");
+		}
+		// WW
+		if (name.contains("Roscoe") || name.contains("Daniel")) {
+			map.put("withWinterwell", "with Winterwell Associates Limited (Company Registration Number SC342991) and the employment was transferred to the Company on 31st July 2018");
+		} else {
+			map.put("withWinterwell","");
+		}		
+		// end HACK
 		
-		// now process into the template
-//		// ...2 stage template? .md then .html?				
-//		if (mdtemplate != null) {
-//			srcText += "\n\n"+mdtemplate;
-//		}
 		// ...normal
 		File out = getOutputFileForSource(csvFile);				
 		out = FileUtils.changeType(out, rowNum+FileUtils.safeFilename(row[0].trim(), false)+".html");		
@@ -178,7 +244,8 @@ public class BuildJerbilWebSite extends BuildTask {
 		// combine base vars and csv vars
 		Map<String, String> vars = new HashMap(config.var);
 		vars.putAll(map);		
-		bjp.setBaseVars(vars);
+		String ww = vars.get("withWinterwell");
+		bjp.setVars(vars);
 		// run
 		bjp.run();
 	}
