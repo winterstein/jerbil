@@ -156,6 +156,7 @@ public class BuildJerbilWebSite extends BuildTask {
 			map.put(hi, ri);
 		}
 		
+		
 		// HACK
 		if (csvFile.getName().equals("contact-details.csv")) {
 			return;
@@ -239,6 +240,7 @@ public class BuildJerbilWebSite extends BuildTask {
 			map.put("withWinterwell","");
 		}		
 		// end HACK
+		
 		
 		// ...normal
 		File out = getOutputFileForSource(csvFile);				
