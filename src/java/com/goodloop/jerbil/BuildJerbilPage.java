@@ -67,12 +67,6 @@ public class BuildJerbilPage {
 	public String toString() {
 		return "BuildJerbilPage [src=" + src + ", out=" + out + ", template=" + template + "]";
 	}
-	
-//	Map<String, Object> var = new HashMap();
-	
-//	public void setVars(Map<String, ?> vars) {
-//		this.var = new HashMap(vars); // defensive copy to avoid accidental shared structure
-//	}
 
 	void run() {
 		String html = FileUtils.read(template).trim();
@@ -103,21 +97,23 @@ public class BuildJerbilPage {
 		if (src != null) {
 			var.put("title", StrUtils.toTitleCasePlus(FileUtils.getBasename(src)));
 		}
-		
-		if (applyMarkdown) {
-			// Strip out variables
-			srcPage = chopSetVars(srcPage, var);
-			
-			// TODO upgrade to https://github.com/vsch/flexmark-java 
-			// or https://github.com/atlassian/commonmark-java
-			srcPage = Markdown.render(srcPage);
-		}
+
+		// Strip out variables
+		srcPage = chopSetVars(srcPage, var);
 		// override markdown key:value header values? use-case: csv
 		if (vars!=null) {
 			var.putAll(vars);
 		}
-		// Variables
+
+		// Insert Variables
 		String html = insertVariables(templateHtml, srcPage, var);
+		
+		// Render
+		if (applyMarkdown) {			
+			// TODO upgrade to https://github.com/vsch/flexmark-java 
+			// or https://github.com/atlassian/commonmark-java
+			html = Markdown.render(html);
+		}
 		
 		// Recursive fill in of file references
 		html = run3_fillSections(html, var);

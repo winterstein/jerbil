@@ -23,4 +23,18 @@ public class BuildJerbilWebSiteTest {
 		bjw.doTask3_CSV(csvFile);
 	}
 
+
+	@Test
+	public void testDoTask3_oneFile_directorsContract() {
+		JerbilConfig config = new JerbilConfig();
+//		config.useJS = true;
+		config.setProjectdir(new File(FileUtils.getWinterwellDir(), "Useful-Legal-Docs-for-a-UK-StartUp"));
+		Dep.set(JerbilConfig.class, config);
+		
+		BuildJerbilWebSite bjw = new BuildJerbilWebSite(config);
+		
+		File csvFile = new File(config.getPagesDir(), "directors/directors-contract.csv");
+		assert csvFile.isFile();
+		bjw.doTask3_CSV(csvFile);
+	}
 }

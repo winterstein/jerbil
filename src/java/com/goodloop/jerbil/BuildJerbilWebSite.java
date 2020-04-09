@@ -26,7 +26,7 @@ import com.winterwell.utils.web.WebUtils2;
  * Build a Jerbil website.
  * .txt and .md files in the pages directory are converted into .html in the webroot directory.
  * @author daniel
- *
+ * @testedby BuildJerbilWebSiteTest
  */
 public class BuildJerbilWebSite extends BuildTask {
 	
@@ -174,7 +174,8 @@ public class BuildJerbilWebSite extends BuildTask {
 		if (name.contains("Tunnicli")) name = "Tunnicliffe";
 		if (name.contains("Kerslake")) name = "Kerslake";
 		if (name.contains("Rainey")) name = "Rainey";
-		CSVReader r = new CSVReader(new File(csvFile.getParentFile(), "contact-details.csv"));
+		if (name.contains("Scurlock")) name = "Scurlock";
+		CSVReader r = new CSVReader(new File(config.getPagesDir(), "/job-contracts/contact-details.csv"));
 		Iterable<Map<String, String>> maps = r.asListOfMaps();
 		Map<String, String> details = null;
 		for (Map<String, String> m : maps) {
