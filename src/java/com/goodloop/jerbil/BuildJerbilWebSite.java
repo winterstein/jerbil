@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.winterwell.bob.BuildTask;
 import com.winterwell.utils.Printer;
+import com.winterwell.utils.Proc;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
 import com.winterwell.utils.containers.ArrayMap;
@@ -92,6 +93,7 @@ public class BuildJerbilWebSite extends BuildTask {
 				Log.d(LOGTAG, "Copy as-is "+f);
 				String relpath = FileUtils.getRelativePath(f, pages);		
 				File out = new File(webroot, relpath);
+				out.getParentFile().mkdirs();
 				FileUtils.copy(f, out);
 				continue;
 			}
@@ -155,13 +157,16 @@ public class BuildJerbilWebSite extends BuildTask {
 		}
 		
 		// HACK
+		if (csvFile.getName().equals("contact-details.csv")) {
+			return;
+		}
 		// rm blanks
 		for(Object k : map.keySet().toArray()) {
 			if (Utils.isBlank(map.get(k))) {
 				map.remove(k);
 			}
 		}
-		String name = (String) map.get("worker");
+		String name = Utils.or((String) map.get("worker"), " ");
 		if (name.startsWith("X")) {
 			return; // skip
 		}
@@ -248,6 +253,13 @@ public class BuildJerbilWebSite extends BuildTask {
 		bjp.setVars(vars);
 		// run
 		bjp.run();
+
+		// HACK make a pdf too
+		File pdf = FileUtils.changeType(out, "pdf");
+		Proc proc = new Proc("chrome-headless-render-pdf --url=file://"+out.getAbsolutePath()+" --pdf="+pdf.getAbsolutePath());
+		proc.start();
+		proc.waitFor();
+		proc.close();
 	}
 
 	protected File getOutputFileForSource(File f) {
