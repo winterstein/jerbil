@@ -94,7 +94,7 @@ public class BuildJerbilPage {
 	 */
 	private String run2_render(boolean applyMarkdown, String srcPage, String templateHtml, Map var) {
 		// $title (done before looking at the local vars so they could override it)
-		if (src != null) {
+		if (src != null && ! var.containsKey("title")) {
 			var.put("title", StrUtils.toTitleCasePlus(FileUtils.getBasename(src)));
 		}
 
@@ -105,15 +105,18 @@ public class BuildJerbilPage {
 			var.putAll(vars);
 		}
 
-		// Insert Variables
-		String html = insertVariables(templateHtml, srcPage, var);
-		
+		// Insert Variables into src, and src into html, and vars in html too
+		String srcPageWithVars = insertVariables(srcPage, var);
 		// Render
-		if (applyMarkdown) {			
+		if (applyMarkdown) {	
 			// TODO upgrade to https://github.com/vsch/flexmark-java 
 			// or https://github.com/atlassian/commonmark-java
-			html = Markdown.render(html);
+			srcPageWithVars = Markdown.render(srcPageWithVars);
 		}
+		// insert into template
+		var.put("contents", srcPageWithVars);
+		// vars in template too
+		String html = insertVariables(templateHtml, var);				
 		
 		// Recursive fill in of file references
 		html = run3_fillSections(html, var);
@@ -234,12 +237,11 @@ public class BuildJerbilPage {
 		return html;
 	}
 
-	String insertVariables(String html, String page, Map<String,Object> var) {
+	String insertVariables(String plainTextOrHtml, Map<String,Object> var) {
 		// TODO key: value at the top of file -> javascript jerbil.key = value variables
 		// TODO files -> safely restricted file access??
-		html = html.replace("$generator", "Jerbil version "+JerbilConfig.VERSION);
-		html = html.replace("$contents", page);
-		html = html.replace("$webroot", ""); // TODO if dir is a sub-dir of webroot, put in a local path here, e.g. ".." 
+		plainTextOrHtml = plainTextOrHtml.replace("$generator", "Jerbil version "+JerbilConfig.VERSION);
+		plainTextOrHtml = plainTextOrHtml.replace("$webroot", ""); // TODO if dir is a sub-dir of webroot, put in a local path here, e.g. ".." 
 		long modtime = src.lastModified();
 		// vars
 		if ( ! var.containsKey("date")) {			
@@ -255,7 +257,7 @@ public class BuildJerbilPage {
 		
 		SimpleTemplateVars stv = new SimpleTemplateVars(mdvars);
 		stv.setUseJS(config.useJS);
-		String html2 = stv.process(html);
+		String html2 = stv.process(plainTextOrHtml);
 		return html2;
 	}
 

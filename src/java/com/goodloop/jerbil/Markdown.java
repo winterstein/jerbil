@@ -94,6 +94,7 @@ public class Markdown {
 	}
 
 	public static String renderWithoutWrapper(String string) {
+		// ??for speed: check if its plain text?
 		String mds = render(string);
 		mds = mds.replaceFirst("^<[^>]+>", "");
 		mds = mds.replaceFirst("</[a-zA-Z]+>$", "");

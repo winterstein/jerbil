@@ -203,7 +203,7 @@ public class BuildJerbilWebSite extends BuildTask {
 				map.put("jurisdiction", "England and Wales");
 				map.put("jurisdictionAdj", "English");
 				map.put("scotlandStyle", "display:hidden;");
-			} else if (address.contains("Edinburgh") || address.contains("EH")) {
+			} else if (address.contains("Edinburgh") || address.contains("EH") || name.contains("Eve")) {
 				map.put("witness", "## Witness\n\n"
 				+"Note: The witness is not a party to the contract, and does not have to read or agree with it.\n\n"
 				+"> As a witness, I confirm that the signature above was made by the Employee "+map.get("worker")+" agreeing to this contract.\n\n" 
@@ -247,6 +247,7 @@ public class BuildJerbilWebSite extends BuildTask {
 		out = FileUtils.changeType(out, rowNum+FileUtils.safeFilename(row[0].trim(), false)+".html");		
 		File template = getTemplate(out);
 		assert template != null : "No html template?! "+webroot;
+		
 		// ...run
 		BuildJerbilPage bjp = new BuildJerbilPage(csvFile, mdtemplate, out, template);
 		// combine base vars and csv vars
@@ -258,11 +259,19 @@ public class BuildJerbilWebSite extends BuildTask {
 		bjp.run();
 
 		// HACK make a pdf too
-		File pdf = FileUtils.changeType(out, "pdf");
-		Proc proc = new Proc("chrome-headless-render-pdf --url=file://"+out.getAbsolutePath()+" --pdf="+pdf.getAbsolutePath());
-		proc.start();
-		proc.waitFor();
-		proc.close();
+		if (config.makePdfPattern != null) {
+			String[] ps = config.makePdfPattern.split(",\\w*");
+			final File fout = out;
+			String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, fout));
+			if (match!=null) {
+				File pdf = FileUtils.changeType(out, "pdf");
+				Proc proc = new Proc("chrome-headless-render-pdf --url=file://"+out.getAbsolutePath()+" --pdf="+pdf.getAbsolutePath());
+				proc.start();
+				proc.waitFor();
+				proc.close();
+				Log.d(LOGTAG, "Made "+pdf);
+			}
+		}
 	}
 
 	protected File getOutputFileForSource(File f) {

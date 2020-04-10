@@ -14,6 +14,7 @@ public class BuildJerbilWebSiteTest {
 	@Test
 	public void testDoTask3_oneFile_DWjobContract() {
 		JerbilConfig config = new JerbilConfig();
+		config.makePdfPattern="**/job-contracts/*.html,**/directors/*.html";
 		config.setProjectdir(new File(FileUtils.getWinterwellDir(), "Useful-Legal-Docs-for-a-UK-StartUp"));
 		Dep.set(JerbilConfig.class, config);
 		
@@ -27,6 +28,7 @@ public class BuildJerbilWebSiteTest {
 	@Test
 	public void testDoTask3_oneFile_directorsContract() {
 		JerbilConfig config = new JerbilConfig();
+		config.makePdfPattern="**/job-contracts/*.html,**/directors/*.html";
 //		config.useJS = true;
 		config.setProjectdir(new File(FileUtils.getWinterwellDir(), "Useful-Legal-Docs-for-a-UK-StartUp"));
 		Dep.set(JerbilConfig.class, config);

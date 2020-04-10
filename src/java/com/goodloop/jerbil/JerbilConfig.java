@@ -76,6 +76,9 @@ public class JerbilConfig {
 	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
 	public boolean useJS;
 
+	@Option(description="Glob pattern eg *.txt for files to convert into pdf")
+	public String makePdfPattern;
+
 	public File getWebRootDir() {
 		return new File(projectdir, webroot);
 	}
