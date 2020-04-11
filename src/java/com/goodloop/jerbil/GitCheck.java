@@ -4,7 +4,14 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.jetty.util.ajax.JSON;
+
 import com.winterwell.bob.tasks.GitTask;
+import com.winterwell.utils.Printer;
+import com.winterwell.utils.Proc;
+import com.winterwell.utils.Utils;
+import com.winterwell.utils.io.ConfigBuilder;
+import com.winterwell.utils.io.ConfigFactory;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.log.Log;
 import com.winterwell.utils.time.Dt;
@@ -17,10 +24,12 @@ import com.winterwell.utils.time.TUnit;
  */
 public class GitCheck extends TimerTask {
 
+	private static final String LOGTAG = "gitcheck";
 	private File dir;
 	private Timer timer;
 	private Dt dt;
 	private Throwable error;
+	private GitCheckConfig config;
 
 	public GitCheck(File projectdir, Dt dt) {
 		this.dir = projectdir;
@@ -41,21 +50,48 @@ public class GitCheck extends TimerTask {
 			return;
 		}
 		try {			
+			// Pull
 			GitTask pull = new GitTask(GitTask.PULL, dir);
-			pull.run();
+			pull.doTask();
+			
+			// process?
 			String out = pull.getOutput();
 			pull.close();
 			error = null;	
 			Log.d("gitcheck", out);
+			if (out.contains("Already up-to-date")) {
+				return;
+			} else if (out.contains("Updating")) {
+				onUpdate();
+			}
 		} catch(Throwable ex) {			
 			error = ex;
-			Log.e("GitCheck", ex);
+			Log.e(LOGTAG, ex);
 			// stop??
+		}
+	}
+
+	private void onUpdate() {
+		// run on-update command?
+		if (config!=null && config.command!=null) {
+			Proc proc = new Proc(config.command);
+			Log.i(LOGTAG, "Run "+config.command);
+			proc.start();
+			proc.waitFor(TUnit.MINUTE.dt);									
+			if ( ! Utils.isBlank(proc.getError())) {
+				Log.w(LOGTAG, proc.getError());
+			}
+			Log.d(LOGTAG, proc.getOutput());
+			proc.close();
 		}
 	}
 	
 	public static void main(String[] args) {
-		GitCheck gc = new GitCheck(FileUtils.getWorkingDirectory(), new Dt(20, TUnit.SECOND));
+		// TODO an option for the frequency
+		GitCheckConfig config = ConfigFactory.get().getConfigBuilder(GitCheckConfig.class).setFromMain(args).get();		
+		GitCheck gc = new GitCheck(FileUtils.getWorkingDirectory(), config.dt);
+		gc.config = config;
+		Printer.out(gc.config);
 		gc.start();
 	}
 
