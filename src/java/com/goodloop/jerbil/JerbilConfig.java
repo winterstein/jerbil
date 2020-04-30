@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.6.5";
+	public static final String VERSION = "0.6.6";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -70,13 +70,13 @@ public class JerbilConfig {
 	@Option(description="Download a fresh copy of Jerbil itself (but you'll have to copy the jar into place)")
 	public boolean update;
 
-	@Option(description="If you just wish to process a single file")
+	@Option(description="If you just wish to process a single file", tokens="-i,-inputFile")
 	public File inputFile;
 
 	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
 	public boolean useJS;
 
-	@Option(description="Glob pattern eg *.txt for files to convert into pdf")
+	@Option(description="Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
 	public String makePdfPattern;
 
 	public File getWebRootDir() {

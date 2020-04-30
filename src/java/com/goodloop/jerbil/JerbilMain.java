@@ -57,11 +57,7 @@ public class JerbilMain {
 
 		// help?
 		if (args.length==1 && "--help".equals(args[0])) {
-			System.out.println("");
-			System.out.println("Jerbil website builder, version "+JerbilConfig.VERSION+" "+Utils.or(getMyJar(),""));
-			System.out.println("----------------------------------------");
-			System.out.println("");
-			System.out.println(new ConfigBuilder(new JerbilConfig()).getOptionsMessage());
+			showHelp();
 			return;
 		}
 
@@ -75,9 +71,12 @@ public class JerbilMain {
 		}
 		
 		if (config.projectdir==null) {
+			// fail helpfully
+			showHelp();
 			System.err.println("Run in a Jerbil website project directory -- or with the path to one as a parameter.");
-			return;
+			System.exit(-1);
 		}
+		
 		// build
 		b = new BuildJerbilWebSite(config);
 		if (config.inputFile==null) {
@@ -117,6 +116,14 @@ public class JerbilMain {
 		while(true) {
 			Utils.sleep(10000);
 		}
+	}
+
+	private static void showHelp() {
+		System.out.println("");
+		System.out.println("Jerbil website builder, version "+JerbilConfig.VERSION+" "+Utils.or(getMyJar(),""));
+		System.out.println("----------------------------------------");
+		System.out.println("");
+		System.out.println(new ConfigBuilder(new JerbilConfig()).getOptionsMessage());
 	}
 
 	static void doUpdateJar() {
