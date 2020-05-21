@@ -19,32 +19,11 @@ import com.winterwell.utils.io.FileUtils;
 public class BuildJerbil extends BuildWinterwellProject {
 
 	public BuildJerbil() {
-		super(new File(FileUtils.getWinterwellDir(), "jerbil"));
+		super("jerbil");
 		setIncSrc(true);
 		setMainClass("Jerbil");
 		setVersion(JerbilConfig.VERSION);
-		setScpToWW(true);
 		setMakeFatJar(true);
 	}
-	
-
-//	@Override
-//	public List<BuildTask> getDependencies() {
-//		List<BuildTask> list = super.getDependencies();
-////		list.add(new BuildUtils());
-////		list.add(new BuildWeb());
-////		list.add(new BuildBob());
-//		return list;
-//	}
-	
-
-
-	@Override
-	public void doTask() throws Exception {	
-		super.doTask();		
-	}
-
-
-
 
 }
