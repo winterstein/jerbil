@@ -13,6 +13,8 @@ import com.winterwell.utils.io.FileUtils;
  * The latest Jerbil bundle can be downloaded from
  * https://www.winterwell.com/software/downloads/jerbil-all.jar
  * 
+ * See npm jerbil-cms 
+ * 
  * @author daniel
  *
  */
