@@ -81,6 +81,10 @@ public class BuildJerbilWebSite extends BuildTask {
 				// huh?
 				continue;
 			}
+			
+			boolean ok = filterFile(f);
+			if ( ! ok) continue;
+			
 			// "mail merge"?
 			if ( f.getName().endsWith(".csv")) {
 				doTask3_CSV(f);
@@ -101,7 +105,21 @@ public class BuildJerbilWebSite extends BuildTask {
 		}
 	}
 
-	
+	/**
+	 * See {@link JerbilConfig#filter}
+	 * @param f
+	 * @return usually true for "do this"
+	 */
+	private boolean filterFile(File f) {
+		if (Utils.isBlank(config.filter)) return true;
+		String[] ps = config.makePdfPattern.split(",\\w*");
+		String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, f));
+		if (match==null) {
+			return false;
+		}
+		return true;
+	}
+
 	void doTask3_oneFile(File f) {
 		// Process a file!
 		File out = getOutputFileForSource(f);

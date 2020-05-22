@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.6.7-May2020";
+	public static final String VERSION = "0.6.8-May2020";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -36,7 +36,7 @@ public class JerbilConfig {
 	@Option(description="The port to connect to. If you wish to use Jerbil as your primary server, then set this to 80. The standard setup is to use e.g. nginx instead.")
 	public int port = 8282;
 	
-	@Option
+	@Option(description = "Root directory of the website project. Defaults to the current directory.")
 	public File projectdir;	
 	
 	// TODO make this off by default
@@ -72,6 +72,9 @@ public class JerbilConfig {
 
 	@Option(description="If you just wish to process a single file", tokens="-i,-inputFile")
 	public File inputFile;
+	
+	@Option(description="Usually unset. Glob pattern if you just wish to process just a set of files eg \"*nda*\"")
+	public String filter;
 
 	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
 	public boolean useJS;
@@ -79,6 +82,7 @@ public class JerbilConfig {
 	@Option(description="Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
 	public String makePdfPattern;
 
+	
 	public File getWebRootDir() {
 		return new File(projectdir, webroot);
 	}
