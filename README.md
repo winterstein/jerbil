@@ -6,9 +6,11 @@ We use this tool internally and it is 100% ready. We are working on nice packagi
 
 ## Basic use
 
+1. Install: either download the jerbil-all jar, *or if you use `npm`*, install by: `npm -g i jerbil-cms`
 1. Clone the [example jerbil site](https://github.com/winterstein/jerbil-website) to get started quickly.
-2. Write content in the pages directory. You can mix markdown and html.
-3. Run Jerbil
+2. Write content in the `pages` directory. You can mix markdown and html.
+3. Run Jerbil: `java -jar jerbil-all.jar` in your project's directory.    
+Or, if you used npm to install jerbil-cms, just type `jerbil` in the project directory.
 
 ## Variables
 
@@ -26,7 +28,7 @@ You can pull content from other files into a page and use templates. E.g.
 * `<section src='myarticletemplate.html'>Blah blah</section>` Use myarticletemplate.html as a template with the contents "Blah blah".	
 
 
-## Installation
+## Developer Installation
 
 Depends on: the libraries in the [open-code](https://github.com/sodash/open-code) repo.
 
