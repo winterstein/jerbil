@@ -94,7 +94,7 @@ public class JerbilMain {
 			return;
 		}
 		// NB: dont skip repeat builds (otherwise watch-for-updates doesnt work)
-		Bob.getSingleton().getSettings().clean = true;
+		Bob.getSingleton().getConfig().clean = true;
 		
 		// run a web server? TODO maybe move this earlier, so pdf gen can use it?
 		if (config.server) {
