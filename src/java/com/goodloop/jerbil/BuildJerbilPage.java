@@ -213,7 +213,7 @@ public class BuildJerbilPage {
 		// 4. a webroot file
 		File outDir = out.getParentFile();
 		
-		File webroot = config.getWebRootDir();
+		final File webroot = config.getWebRootDir(); // stop when we leave webroot
 		while(outDir!=null) {
 			File wf = new File(outDir, insert);
 			if (wf.isFile()) {
@@ -225,7 +225,9 @@ public class BuildJerbilPage {
 			}
 		}
 		
-		throw Utils.runtime(new FileNotFoundException(insert+" referenced in "+src));
+		throw Utils.runtime(new FileNotFoundException(
+				insert+" referenced in "+src
+				+" "));
 	}
 
 	private String addJerbilVersionMarker(String html) {

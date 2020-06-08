@@ -1,13 +1,7 @@
 package jerbil;
 
-import java.io.File;
-import java.util.List;
 
-import com.goodloop.jerbil.JerbilConfig;
-import com.winterwell.bob.BuildTask;
 import com.winterwell.bob.wwjobs.BuildWinterwellProject;
-import com.winterwell.utils.containers.ArraySet;
-import com.winterwell.utils.io.FileUtils;
 
 /**
  * The latest Jerbil bundle can be downloaded from
@@ -24,7 +18,7 @@ public class BuildJerbil extends BuildWinterwellProject {
 		super("jerbil");
 		setIncSrc(true);
 		setMainClass("Jerbil");
-		setVersion(JerbilConfig.VERSION);
+		setVersion("0.7.2-June2020"); //JerbilConfig.VERSION);
 		setMakeFatJar(true);
 	}
 

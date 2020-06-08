@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.6.8-May2020";
+	public static final String VERSION = "0.7.2-June2020";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -54,8 +54,16 @@ public class JerbilConfig {
 
 	@Option
 	public String webroot = DEFAULT_WEBROOT;
+	
 	@Option
 	public String pages = "pages";
+	
+	@Option(description = "If set, a folder of source style files, e.g. .less files to turn into .css. Use with styleCompiler")
+	public File styleSrcDir;
+		
+	@Option(description = "If set, a command to compile the style files. e.g. `lessc $input style/$output`" 
+			+"\n   $input and $output will be replaced with the input file (full path), and filename.css")
+	public String styleCompiler;
 
 	public File getPagesDir() {
 		return new File(projectdir, pages);

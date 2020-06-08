@@ -244,7 +244,7 @@ public class JerbilMain {
 		
 		{
 			WatchFiles watch = new WatchFiles();
-			watch.addFile(config.getPagesDir());
+			watch.addFile(config.getPagesDir());			
 			watch.addListener(new IListenToFileEvents() {
 				@Override
 				public void processEvent(FileEvent pair2) {
@@ -258,18 +258,21 @@ public class JerbilMain {
 		{	// templates
 			WatchFiles watch = new WatchFiles();
 			watch.addFile(new File(b.getProjectDir(), config.webroot));
+			
+			// TODO watch.addFile(style src + less? watch.addFile(config.getPagesDir());				
+				
 			watch.addListener(new IListenToFileEvents() {
 				@Override
 				public void processEvent(FileEvent fe) {
-					if (fe.file.getName().equals("template.html")) {
+					if (fe.file.getName().contains("template")) {
 						b.run();
 					}
 					// TODO less compilation also
 				}			
 			});						
 			Thread watchThread = new Thread(watch);
-			watchThread.setName("watch-"+b.getProjectDir().getName());
+			watchThread.setName("watch-"+b.getProjectDir().getName()+" template");
 			watchThread.start();
-		}
+		}	
 	}
 }

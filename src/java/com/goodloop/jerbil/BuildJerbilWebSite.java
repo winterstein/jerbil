@@ -58,13 +58,23 @@ public class BuildJerbilWebSite extends BuildTask {
 		assert pages.isDirectory() : pages;
 		doTask2(pages);
 		
-		// TODO also parse html for section tags and variables
-		
-//		// Slides
-//		slideDir = new File(projectDir, "slides");
-//		File template = getTemplate(slideDir);		
+		// css compilation?
+		if ( ! Utils.isBlank(config.styleCompiler)) {
+			doTask2_css();
+		}
 	}
 	
+	private void doTask2_css() throws Exception {				
+		File srcdir = config.styleSrcDir;
+		if ( ! srcdir.isAbsolute()) {
+			srcdir = new File(config.projectdir, srcdir.toString());
+		}
+		BuildCss bc = new BuildCss(config.styleCompiler, srcdir);
+		bc.setWorkingDir(config.getWebRootDir());
+		bc.doTask();
+		bc.close();
+	}
+
 	/**
 	 * dir pages
 	 * */
