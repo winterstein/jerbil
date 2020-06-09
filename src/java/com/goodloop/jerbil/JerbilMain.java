@@ -240,14 +240,20 @@ public class JerbilMain {
 	}
 
 	protected static void runWatcher(JerbilConfig config) throws IOException {		
-		System.out.println("Watching "+b.getProjectDir()+"/"+config.pages+" + html templates for edits");
-		
+		Log.d("Watching "+b.getProjectDir()+" (pages, style, templates) for edits");		
 		{
-			WatchFiles watch = new WatchFiles();
-			watch.addFile(config.getPagesDir());			
+			WatchFiles watch = new WatchFiles();			
+			watch.addDir(config.getPagesDir());		
+			if (config.getStyleSrcDir()!=null) {
+				watch.addDir(config.getStyleSrcDir());
+			}
+			if (config.getTemplatesDir()!=null) {
+				watch.addDir(config.getTemplatesDir());
+			}
 			watch.addListener(new IListenToFileEvents() {
 				@Override
 				public void processEvent(FileEvent pair2) {
+					Log.d(LOGTAG, "\n\n"+pair2+"\n\n");
 					b.run();
 				}			
 			});						
@@ -257,17 +263,14 @@ public class JerbilMain {
 		}
 		{	// templates
 			WatchFiles watch = new WatchFiles();
-			watch.addFile(new File(b.getProjectDir(), config.webroot));
-			
-			// TODO watch.addFile(style src + less? watch.addFile(config.getPagesDir());				
-				
+			// TODO a better filter for safety
+			watch.addDir(new File(b.getProjectDir(), config.webroot));							
 			watch.addListener(new IListenToFileEvents() {
 				@Override
 				public void processEvent(FileEvent fe) {
-					if (fe.file.getName().contains("template")) {
+					if (fe.file.toString().contains("template")) {
 						b.run();
 					}
-					// TODO less compilation also
 				}			
 			});						
 			Thread watchThread = new Thread(watch);

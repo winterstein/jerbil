@@ -14,8 +14,8 @@ public class BuildCssTest {
 		jc.styleCompiler = "lessc $input webroot/style/$output";
 		jc.styleSrcDir = new File("/home/daniel/winterwell/website/src/style");
 		
-		BuildCss bc = new BuildCss(jc.styleCompiler, jc.styleSrcDir);
-		bc.setWorkingDir(jc.styleSrcDir.getParentFile().getParentFile());
+		BuildCss bc = new BuildCss(jc.styleCompiler, jc.getStyleSrcDir());
+		bc.setWorkingDir(jc.getStyleSrcDir().getParentFile().getParentFile());
 		bc.doTask();
 	}
 

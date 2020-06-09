@@ -17,7 +17,7 @@ import com.vladsch.flexmark.util.options.MutableDataHolder;
  * @author daniel
  *
  */
-public class JerbilLinkResolverExtension implements Parser.ParserExtension, HtmlRendererExtension {
+class JerbilLinkResolverExtension implements Parser.ParserExtension, HtmlRendererExtension {
 
 
 	public static Parser.ParserExtension create() {

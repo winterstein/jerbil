@@ -65,10 +65,7 @@ public class BuildJerbilWebSite extends BuildTask {
 	}
 	
 	private void doTask2_css() throws Exception {				
-		File srcdir = config.styleSrcDir;
-		if ( ! srcdir.isAbsolute()) {
-			srcdir = new File(config.projectdir, srcdir.toString());
-		}
+		File srcdir = config.getStyleSrcDir();
 		BuildCss bc = new BuildCss(config.styleCompiler, srcdir);
 		bc.setWorkingDir(config.getWebRootDir());
 		bc.doTask();
@@ -309,11 +306,29 @@ public class BuildJerbilWebSite extends BuildTask {
 		return out;
 	}
 
+	/**
+	 * Checks:
+	 * 
+	 * output-directory
+	 * templates
+	 * webroot
+	 * 
+	 * @param outputFile
+	 * @return template.html
+	 */
 	protected File getTemplate(File outputFile) {
+		// local
 		File dir = outputFile.isDirectory()? outputFile : outputFile.getParentFile();
 		File tf = new File(dir, "template.html");
 		if (tf.exists()) return tf;
 		// recurse??
+		
+		// templates folder?
+		if (config.getTemplatesDir()!=null) {
+			tf = new File(config.getTemplatesDir(), "template.html");
+			if (tf.exists()) return tf;
+		}
+		
 		// default
 		return new File(webroot, "template.html");
 	}

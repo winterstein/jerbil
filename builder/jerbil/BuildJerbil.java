@@ -18,7 +18,7 @@ public class BuildJerbil extends BuildWinterwellProject {
 		super("jerbil");
 		setIncSrc(true);
 		setMainClass("Jerbil");
-		setVersion("0.7.2-June2020"); //JerbilConfig.VERSION);
+		setVersion("0.7.4-June2020"); //JerbilConfig.VERSION);
 		setMakeFatJar(true);
 	}
 
