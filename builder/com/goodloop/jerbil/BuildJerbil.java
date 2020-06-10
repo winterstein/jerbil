@@ -1,4 +1,4 @@
-package jerbil;
+package com.goodloop.jerbil;
 
 
 import com.winterwell.bob.wwjobs.BuildWinterwellProject;
@@ -18,7 +18,7 @@ public class BuildJerbil extends BuildWinterwellProject {
 		super("jerbil");
 		setIncSrc(true);
 		setMainClass("Jerbil");
-		setVersion("0.7.4-June2020"); //JerbilConfig.VERSION);
+		setVersion(JerbilConfig.VERSION);
 		setMakeFatJar(true);
 	}
 

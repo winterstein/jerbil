@@ -23,3 +23,6 @@ bob.log
 boblog
 node_modules
 web/build
+config/version.properties
+dependencies
+pom.bob.xml

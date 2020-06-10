@@ -109,9 +109,8 @@ public class BuildJerbilPage {
 		String srcPageWithVars = insertVariables(srcPage, var);
 		// Render
 		if (applyMarkdown) {	
-			// TODO upgrade to https://github.com/vsch/flexmark-java 
-			// or https://github.com/atlassian/commonmark-java
-			srcPageWithVars = Markdown.render(srcPageWithVars);
+			Markdown markdown = Dep.get(Markdown.class);
+			srcPageWithVars = markdown.render(srcPageWithVars);
 		}
 		// insert into template
 		var.put("contents", srcPageWithVars);
@@ -254,8 +253,9 @@ public class BuildJerbilPage {
 		}
 		
 		// convert var values to Markdown		
+		Markdown markdown = Dep.get(Markdown.class);
 		Map<String, Object> mdvars = Containers.applyToValues(
-				v -> v instanceof String? Markdown.renderWithoutWrapper((String)v) : v, var);
+				v -> v instanceof String? markdown.renderWithoutWrapper((String)v) : v, var);
 		
 		SimpleTemplateVars stv = new SimpleTemplateVars(mdvars);
 		stv.setUseJS(config.useJS);

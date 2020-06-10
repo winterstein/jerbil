@@ -77,6 +77,8 @@ public class JerbilMain {
 			System.exit(-1);
 		}
 		
+		init(config);
+		
 		// build
 		b = new BuildJerbilWebSite(config);
 		if (config.inputFile==null) {
@@ -116,6 +118,12 @@ public class JerbilMain {
 		while(true) {
 			Utils.sleep(10000);
 		}
+	}
+
+	private static void init(JerbilConfig config) {
+		Markdown markdown = new Markdown();
+		markdown.sectionDivs = config.sectionDivs;
+		Dep.set(Markdown.class, markdown);
 	}
 
 	private static void showHelp() {

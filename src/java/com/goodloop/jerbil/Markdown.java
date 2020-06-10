@@ -17,12 +17,18 @@ import com.winterwell.utils.web.WebUtils;
 
 /**
  * Utility class for calling flexmark
- * @author daniel
- *
+ * 
+ * 			// ?? or https://github.com/atlassian/commonmark-java
+
+ * 
+ * @author Mark, Daniel
+ * @testedby MarkdownTest
  */
 public class Markdown {
 
-	public static String render(String page) {
+	boolean sectionDivs;
+	
+	public String render(String page) {
 		MutableDataSet options = new MutableDataSet();		
 		
         // uncomment to set optional extensions
@@ -31,8 +37,8 @@ public class Markdown {
         			TablesExtension.create(), 
         			StrikethroughExtension.create(),
         			AnchorLinkExtension.create(),
-        			WikiLinkExtension.create()
-        			,JerbilLinkResolverExtension.create()
+        			WikiLinkExtension.create(),
+        			JerbilLinkResolverExtension.create()
         		));
 
         // uncomment to convert soft-breaks to hard breaks
@@ -46,6 +52,12 @@ public class Markdown {
         Node document = parser.parse(page);
         String html = renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"
   
+        if ( ! sectionDivs) {
+        	return html;
+        }
+        
+        // What is the use-case for this??
+        // Create section divs from headers
         // NB: must countdown, otherwise youd have to deal with spotting the divs it itself inserts
         for(int hi=6; hi!=0; hi--) {
 	        int indx = 0;   
@@ -63,7 +75,7 @@ public class Markdown {
 	        	indx = i + div.length() + 1;
 	        }
         }
-//          System.out.println(html);
+
         return html;
 	}
 
@@ -76,7 +88,7 @@ public class Markdown {
 	 * @param openingHTagEnd
 	 * @return
 	 */
-	private static int sectionEnd(String html, int hi, int openingHTagEnd) {
+	private int sectionEnd(String html, int hi, int openingHTagEnd) {
 		int earliest = html.length();
 		for(int hi2 = hi; hi2 > 0; hi2--) {
 			int j = html.indexOf("<h"+hi2, openingHTagEnd);
@@ -93,7 +105,12 @@ public class Markdown {
 		return earliest;
 	}
 
-	public static String renderWithoutWrapper(String string) {
+	/**
+	 * render without a wrapping div
+	 * @param string
+	 * @return fragment of html
+	 */
+	public String renderWithoutWrapper(String string) {
 		// ??for speed: check if its plain text?
 		String mds = render(string);
 		mds = mds.replaceFirst("^<[^>]+>", "");
