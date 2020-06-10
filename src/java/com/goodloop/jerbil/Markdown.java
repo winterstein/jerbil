@@ -69,9 +69,10 @@ public class Markdown {
 	        	String cn = StrUtils.toCanonical(h).replaceAll("\\s+", "-");
 	        	// where does this section end? when it hist the next header
 	        	int endOfSection = sectionEnd(html, hi, tagEnd+4);
-	        	String div = "<div class='h"+hi+"-section "+cn+"'>";
-	        	html = html.substring(0, i)+div+html.substring(i, endOfSection)+"</div><!-- ./"+cn+" -->\n"
+	        	String div = "<div class='h"+hi+"-section "+cn+"'><div class='section-body'>\n";
+	        	String html2 = html.substring(0, i)+div+html.substring(i, endOfSection)+"\n</div></div><!-- ./"+cn+" -->\n"
 	        			+html.substring(endOfSection);
+	        	html = html2;
 	        	indx = i + div.length() + 1;
 	        }
         }

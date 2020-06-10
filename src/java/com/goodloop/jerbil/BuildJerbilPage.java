@@ -87,6 +87,7 @@ public class BuildJerbilPage {
 
 	/**
 	 * 
+	 * @param applyMarkdown 
 	 * @param applyMarkdown Also strip out vars
 	 * @param srcPage Text contents
 	 * @param html
@@ -106,16 +107,11 @@ public class BuildJerbilPage {
 		}
 
 		// Insert Variables into src, and src into html, and vars in html too
-		String srcPageWithVars = insertVariables(srcPage, var);
-		// Render
-		if (applyMarkdown) {	
-			Markdown markdown = Dep.get(Markdown.class);
-			srcPageWithVars = markdown.render(srcPageWithVars);
-		}
+		String srcPageWithVars = insertVariables(srcPage, var, applyMarkdown);
 		// insert into template
 		var.put("contents", srcPageWithVars);
-		// vars in template too
-		String html = insertVariables(templateHtml, var);				
+		// vars in template too // ??this means vars will go twice through Markdown -- is that OK??
+		String html = insertVariables(templateHtml, var, applyMarkdown);				
 		
 		// Recursive fill in of file references
 		html = run3_fillSections(html, var);
@@ -238,7 +234,7 @@ public class BuildJerbilPage {
 		return html;
 	}
 
-	String insertVariables(String plainTextOrHtml, Map<String,Object> var) {
+	String insertVariables(String plainTextOrHtml, Map<String,Object> var, boolean applyMarkdown) {
 		// TODO key: value at the top of file -> javascript jerbil.key = value variables
 		// TODO files -> safely restricted file access??
 		plainTextOrHtml = plainTextOrHtml.replace("$generator", "Jerbil version "+JerbilConfig.VERSION);
@@ -252,12 +248,16 @@ public class BuildJerbilPage {
 			var.put("modtime", new Time(modtime).toString());
 		}
 		
-		// convert var values to Markdown		
-		Markdown markdown = Dep.get(Markdown.class);
-		Map<String, Object> mdvars = Containers.applyToValues(
-				v -> v instanceof String? markdown.renderWithoutWrapper((String)v) : v, var);
+		// convert var values to Markdown
+		// This can include applying markdown to contents!
+		if (applyMarkdown) {
+			Markdown markdown = Dep.get(Markdown.class);
+			Map<String, Object> mdvars = Containers.applyToValues(
+					v -> v instanceof String? markdown.renderWithoutWrapper((String)v) : v, var);
+			var = mdvars;
+		}
 		
-		SimpleTemplateVars stv = new SimpleTemplateVars(mdvars);
+		SimpleTemplateVars stv = new SimpleTemplateVars(var);
 		stv.setUseJS(config.useJS);
 		String html2 = stv.process(plainTextOrHtml);
 		return html2;
