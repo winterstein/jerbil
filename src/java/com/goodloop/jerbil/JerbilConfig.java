@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.7.5-June2020";
+	public static final String VERSION = "0.7.6-June2020";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -90,9 +90,8 @@ public class JerbilConfig {
 	@Option(description="Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
 	public String makePdfPattern;
 
-	@Option(description="If true, create divs to enclose the sections implicitly created by headers")
-	public boolean sectionDivs;
-
+	@Option(description="If set, create divs to enclose the sections implicitly created by headers h1, h2 ...upto this number.")
+	public int sectionDivs;
 	
 	public File getWebRootDir() {
 		return new File(projectdir, webroot);

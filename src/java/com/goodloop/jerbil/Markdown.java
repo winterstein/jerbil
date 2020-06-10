@@ -26,7 +26,7 @@ import com.winterwell.utils.web.WebUtils;
  */
 public class Markdown {
 
-	boolean sectionDivs;
+	int sectionDivs;
 	
 	public String render(String page) {
 		MutableDataSet options = new MutableDataSet();		
@@ -52,14 +52,14 @@ public class Markdown {
         Node document = parser.parse(page);
         String html = renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"
   
-        if ( ! sectionDivs) {
+        if (sectionDivs <= 0) {
         	return html;
         }
         
-        // What is the use-case for this??
+        // Use-case: e.g. to create container guts will full-bleed backgrounds
         // Create section divs from headers
         // NB: must countdown, otherwise youd have to deal with spotting the divs it itself inserts
-        for(int hi=6; hi!=0; hi--) {
+        for(int hi=sectionDivs; hi!=0; hi--) {
 	        int indx = 0;   
 	        while(true) {
 	        	int i = html.indexOf("<h"+hi, indx);
