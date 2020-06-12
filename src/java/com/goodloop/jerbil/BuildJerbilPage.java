@@ -106,11 +106,15 @@ public class BuildJerbilPage {
 			var.putAll(vars);
 		}
 
-		// Insert Variables into src, and src into html, and vars in html too
-		String srcPageWithVars = insertVariables(srcPage, var, applyMarkdown);
-		// insert into template
-		var.put("contents", srcPageWithVars);
-		// vars in template too // ??this means vars will go twice through Markdown -- is that OK??
+		
+		// insert contents into template
+		String srcPageHtml = srcPage;
+		if (applyMarkdown) {
+			Markdown markdown = Dep.get(Markdown.class);
+			srcPageHtml = markdown.render(srcPage);
+		}
+		var.put("contents", srcPageHtml);
+		// insert vars in (this allows for vars in template or page)
 		String html = insertVariables(templateHtml, var, applyMarkdown);				
 		
 		// Recursive fill in of file references
