@@ -20,6 +20,11 @@ You can define variables at the start of a page file, using the simple format:
 
 Then use them within templates or page contents via `$key`.
 
+A couple of variables are defined by default (you can override them). These are:
+
+ - `$title` default value: the filename, without the .html / .txt type 
+ - `$date` default value: the date when run
+
 ## Templates and Imports: `<section>`
 
 You can pull content from other files into a page and use templates. E.g.

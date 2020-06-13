@@ -58,7 +58,9 @@ public class BuildJerbilPageTest {
 		jc.projectdir = new File("example");
 		Dep.set(JerbilConfig.class, jc);
 		jc.getPagesDir().mkdirs();
-		jc.getWebRootDir().mkdirs();		
+		jc.getWebRootDir().mkdirs();
+		
+		Dep.set(Markdown.class, new Markdown());
 	}
 
 

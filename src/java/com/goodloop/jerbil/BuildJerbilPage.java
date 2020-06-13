@@ -113,9 +113,10 @@ public class BuildJerbilPage {
 			Markdown markdown = Dep.get(Markdown.class);
 			srcPageHtml = markdown.render(srcPage);
 		}
-		var.put("contents", srcPageHtml);
+		// put contents into the template
+		String html = templateHtml.replace("$contents", srcPageHtml);
 		// insert vars in (this allows for vars in template or page)
-		String html = insertVariables(templateHtml, var, applyMarkdown);				
+		html = insertVariables(html, var, applyMarkdown);				
 		
 		// Recursive fill in of file references
 		html = run3_fillSections(html, var);
@@ -253,7 +254,6 @@ public class BuildJerbilPage {
 		}
 		
 		// convert var values to Markdown
-		// This can include applying markdown to contents!
 		if (applyMarkdown) {
 			Markdown markdown = Dep.get(Markdown.class);
 			Map<String, Object> mdvars = Containers.applyToValues(
