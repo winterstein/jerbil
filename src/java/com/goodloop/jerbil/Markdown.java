@@ -13,6 +13,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.options.MutableDataSet;
 import com.winterwell.utils.StrUtils;
+import com.winterwell.utils.log.Log;
 import com.winterwell.utils.web.WebUtils;
 
 /**
@@ -56,21 +57,35 @@ public class Markdown {
         	return html;
         }
         
-        // Use-case: e.g. to create container guts will full-bleed backgrounds
+        // Use-case: e.g. to attach css to, and to create container guts will full-bleed backgrounds
         // Create section divs from headers
         // NB: must countdown, otherwise youd have to deal with spotting the divs it itself inserts
+        // ??Should we drop section divs in favour of <section src=template> if you want them??
+        // ??Should we use an html parsing based approach??
         for(int hi=sectionDivs; hi!=0; hi--) {
 	        int indx = 0;   
 	        while(true) {
+	        	// find a header
 	        	int i = html.indexOf("<h"+hi, indx);
 	        	if (i==-1) break;
 	        	int tagEnd = html.indexOf("</h"+hi, i);
+	        	if (i==-1) {
+	        		Log.e("markdown", "Bad h tag: "+StrUtils.substring(html, i, i+75));
+	        		break;
+	        	}
 	        	String h = WebUtils.stripTags(html.substring(i, tagEnd));
+	        	// create a canonical section name
 	        	String cn = StrUtils.toCanonical(h).replaceAll("\\s+", "-");
-	        	// where does this section end? when it hist the next header
+	        	// where does this section end? when it hits the next header
 	        	int endOfSection = sectionEnd(html, hi, tagEnd+4);
-	        	String div = "<div class='h"+hi+"-section "+cn+"'><div class='section-body'>\n";
-	        	String html2 = html.substring(0, i)+div+html.substring(i, endOfSection)+"\n</div></div><!-- ./"+cn+" -->\n"
+	        	// build the wrapper dic
+	        	String div = "<div class='h"+hi+"-section "+cn+"'><div class='section-body'>\n";	        	
+	        	String guts = html.substring(i, endOfSection);
+	        	// HACK - see sectionEnd
+	        	String endMarker = "<p>/"+StrUtils.repeat('#', hi)+"</p>";
+	        	if (guts.endsWith(endMarker)) guts = guts.substring(0, guts.length() - endMarker.length());
+	        	// put it together
+	        	String html2 = html.substring(0, i)+div+guts+"\n</div></div><!-- ./"+cn+" -->\n"
 	        			+html.substring(endOfSection);
 	        	html = html2;
 	        	indx = i + div.length() + 1;
@@ -91,10 +106,22 @@ public class Markdown {
 	 */
 	private int sectionEnd(String html, int hi, int openingHTagEnd) {
 		int earliest = html.length();
+		// next h tag of same or higher rank
 		for(int hi2 = hi; hi2 > 0; hi2--) {
 			int j = html.indexOf("<h"+hi2, openingHTagEnd);
 			if (j!=-1 && j<earliest) earliest = j;
 		}
+		// HACK
+		{	// /### NB: It gets a leading <p> from the markdown rendering
+			String endMarker = "<p>/"+StrUtils.repeat('#', hi)+"</p>";
+			Matcher m = Pattern.compile(endMarker, Pattern.MULTILINE).matcher(html);
+			if (m.find()) {
+				if (m.end() < earliest) {
+					earliest = m.end();
+				}
+			}
+		}
+		// ??
 		for(int hi2 = hi; hi2 > 0; hi2--) {
 			Pattern p = Pattern.compile("<\\w[^>]+class=[^>]+start-h"+hi2);
 			Matcher m = p.matcher(html);

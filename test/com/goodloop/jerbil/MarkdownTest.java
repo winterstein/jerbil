@@ -39,6 +39,19 @@ public class MarkdownTest {
 		}
 	}
 	
+	
+	@Test
+	public void testHeaderEndMarker() {
+		Markdown md = new Markdown();
+		md.sectionDivs = 2;
+		{	// h2
+			String mdt = "\n## Hello\n\nsome text\n\n/##\n\nfoo\n";
+			String html = md.render(mdt);
+			System.out.println(html);
+			assert ! html.contains("/##");
+		}
+	}
+	
 	@Test
 	public void testRenderWithout() {
 		Markdown md = new Markdown();
