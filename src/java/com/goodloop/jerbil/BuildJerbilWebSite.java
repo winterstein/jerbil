@@ -119,7 +119,7 @@ public class BuildJerbilWebSite extends BuildTask {
 	 */
 	private boolean filterFile(File f) {
 		if (Utils.isBlank(config.filter)) return true;
-		String[] ps = config.makePdfPattern.split(",\\w*");
+		String[] ps = config.filter.split(",\\w*");
 		String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, f));
 		if (match==null) {
 			return false;

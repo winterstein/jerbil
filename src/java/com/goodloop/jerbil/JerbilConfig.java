@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.7.8";
+	public static final String VERSION = "0.7.9";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -78,7 +78,7 @@ public class JerbilConfig {
 	@Option(description="Download a fresh copy of Jerbil itself (but you'll have to copy the jar into place)")
 	public boolean update;
 
-	@Option(description="If you just wish to process a single file", tokens="-i,-inputFile")
+	@Option(description="If you just wish to process a single file. See also -filter", tokens="-i,-inputFile")
 	public File inputFile;
 	
 	@Option(description="Usually unset. Glob pattern if you just wish to process just a set of files eg \"*nda*\"")

@@ -122,7 +122,6 @@ public class JerbilMain {
 
 	private static void init(JerbilConfig config) {
 		Markdown markdown = new Markdown();
-		markdown.sectionDivs = config.sectionDivs;
 		Dep.set(Markdown.class, markdown);
 	}
 

@@ -88,8 +88,7 @@ public class BuildJerbilPage {
 
 	/**
 	 * 
-	 * @param applyMarkdown 
-	 * @param applyMarkdown Also strip out vars
+	 * @param applyMarkdown Only false for top-level html files
 	 * @param srcPage Text contents
 	 * @param html
 	 * @return
@@ -106,20 +105,27 @@ public class BuildJerbilPage {
 		if (vars!=null) {
 			var.putAll(vars);
 		}
-
 		
-		// insert contents into template
-		String srcPageHtml = srcPage;
+		// Fill in section references in the body
+		String srcPageNoSections = run3_fillSections(srcPage, var);
+		
+		// apply markdown
+		String srcPageHtml = srcPageNoSections;
 		if (applyMarkdown) {
 			Markdown markdown = Dep.get(Markdown.class);
-			srcPageHtml = markdown.render(srcPage);
+			// NB set lazily to allow that config might change
+			markdown.sectionDivs = config.sectionDivs;
+			srcPageHtml = markdown.render(srcPageNoSections);
 		}
+		
 		// put contents into the template
 		String html = templateHtml.replace("$contents", srcPageHtml);
+		
 		// insert vars in (this allows for vars in template or page)
 		html = insertVariables(html, var, applyMarkdown);				
 		
-		// Recursive fill in of file references
+		// Fill in of section references in the template
+		// NB: these don't get treated as markdown
 		html = run3_fillSections(html, var);
 
 		// Jerbil version marker
@@ -128,7 +134,13 @@ public class BuildJerbilPage {
 		return html;
 	}
 
-	private String run3_fillSections(String html, Map var) {
+	/**
+	 * NB: this is idempotent
+	 * @param html
+	 * @param var
+	 * @return
+	 */
+	String run3_fillSections(String html, Map var) {
 		Pattern SECTION = Pattern.compile(
 				"<section\\s+src=['\"]([\\S'\"]+)['\"]\\s*(/>|>(.*?)</section\\s*>)", Pattern.CASE_INSENSITIVE+Pattern.DOTALL);
 //		for(int depth=0; depth<10; depth++) {
@@ -137,44 +149,49 @@ public class BuildJerbilPage {
 			@Override
 			public void appendReplacementTo(StringBuilder sb, Matcher match) {
 				// src=
-				String insert = match.group(1);
+				String insertSrc = match.group(1);
 				// tag contents?
-				String contents;
+				String sectionContents;
 				if (match.group().endsWith("/>")) {
 					// self closing
-					contents = "";
+					sectionContents = "";
 				} else {
 					// need a close
 					String m2 = match.group(2);
-					contents = m2.substring(1); // chop the > from the front of m2
-					Matcher chopOff = Pattern.compile("</section\\s*>$", Pattern.CASE_INSENSITIVE).matcher(contents);
+					sectionContents = m2.substring(1); // chop the > from the front of m2
+					Matcher chopOff = Pattern.compile("</section\\s*>$", Pattern.CASE_INSENSITIVE).matcher(sectionContents);
 					if (chopOff.find()) {
-						contents = contents.substring(0, chopOff.start());
+						sectionContents = sectionContents.substring(0, chopOff.start());
 					}
-					contents = contents.trim();
+					sectionContents = sectionContents.trim();
 				}				
-				
-				File file = resolveRef(insert);
-				String ftype = FileUtils.getType(file);
-				String text = FileUtils.read(file);
-				
-				boolean srcIsHtml = ftype.endsWith("html") || ftype.endsWith("htm");
-				Map varmap2 = new ArrayMap(var); // copy vars then modify (so we don't pass one sections vars into another section)
-				
-				if (srcIsHtml) {
-					// src is html or a template
-					String shtml = run2_render(true, contents, text, varmap2);					
-					sb.append(shtml);
-				} else {
-					// src is a markdown file -- run it through a dummy template
-					// ...chop contents into vars / contents					
-					contents = chopSetVars(contents, varmap2);
-					String sectionHtml = run2_render(true, text+contents, "<section>$contents</section>", varmap2);
-					sb.append(sectionHtml);					
-				}				
+				String shtml = run4_fillSection(insertSrc, var, sectionContents);
+				sb.append(shtml);
 			}
 		});
 		return html2;
+	}
+	
+	
+	String run4_fillSection(String insertSrc, Map var, String sectionContents) {
+		File file = resolveRef(insertSrc);
+		String ftype = FileUtils.getType(file);
+		String sectionSrc = FileUtils.read(file);
+		
+		boolean srcIsHtml = ftype.endsWith("html") || ftype.endsWith("htm");
+		Map varmap2 = new ArrayMap(var); // copy vars then modify (so we don't pass one sections vars into another section)
+		
+		if (srcIsHtml) {
+			// src is html or a template
+			// NB: applyMarkdown is false as md -> html is done once for the top-level page
+			String shtml = run2_render(false, sectionContents, sectionSrc, varmap2);
+			return shtml;
+		}
+		// src is a markdown file -- run it through a dummy template
+		// ...chop contents into vars / contents					
+		sectionContents = chopSetVars(sectionContents, varmap2);
+		String sectionHtml = run2_render(false, sectionSrc+sectionContents, "<section>$contents</section>", varmap2);	
+		return sectionHtml;		
 	}
 
 	protected String chopSetVars(String srcPage, Map varmap) {
