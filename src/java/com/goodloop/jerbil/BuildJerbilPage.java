@@ -70,6 +70,7 @@ public class BuildJerbilPage {
 	}
 
 	void run() {
+		Log.d(LOGTAG, "Build: "+src+" -> "+out+" ...");
 		String html = FileUtils.read(template).trim();
 		// check the template
 		checkTemplate(html);
