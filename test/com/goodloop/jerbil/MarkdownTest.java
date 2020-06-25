@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.winterwell.utils.Dep;
+import com.winterwell.utils.DepContext;
 import com.winterwell.utils.web.WebUtils;
 
 public class MarkdownTest {
@@ -15,6 +16,15 @@ public class MarkdownTest {
 		if ( ! Dep.has(JerbilConfig.class)) {
 			Dep.set(JerbilConfig.class, new JerbilConfig());
 		}
+	}
+	
+	
+	@Test
+	public void testSectionDivs_emptySectionClose() {			
+		Markdown md = new Markdown();
+		md.sectionDivs = 2;
+		String s = md.render("\n## Foo\n\nbar\n\n/##\n\n## Benefits\n\n/##\n\nFoo\n");
+		System.out.println(s);
 	}
 	
 	@Test

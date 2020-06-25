@@ -78,6 +78,7 @@ public class Markdown {
 	        	String cn = StrUtils.toCanonical(h).replaceAll("\\s+", "-");
 	        	// where does this section end? when it hits the next header
 	        	int endOfSection = sectionEnd(html, hi, tagEnd+4);
+	        	assert endOfSection > i : endOfSection+" vs "+i;
 	        	// build the wrapper dic
 	        	String div = "<div class='h"+hi+"-section "+cn+"'><div class='section-body'>\n";	        	
 	        	String guts = html.substring(i, endOfSection);
@@ -109,13 +110,16 @@ public class Markdown {
 		// next h tag of same or higher rank
 		for(int hi2 = hi; hi2 > 0; hi2--) {
 			int j = html.indexOf("<h"+hi2, openingHTagEnd);
-			if (j!=-1 && j<earliest) earliest = j;
+			if (j!=-1 && j<earliest) {
+				earliest = j;
+			}
 		}
 		// HACK
-		{	// /### NB: It gets a leading <p> from the markdown rendering
+		{	// Detect explicit close markers: /### 
+			// NB: It gets a leading <p> from the markdown rendering
 			String endMarker = "<p>/"+StrUtils.repeat('#', hi)+"</p>";
 			Matcher m = Pattern.compile(endMarker, Pattern.MULTILINE).matcher(html);
-			if (m.find()) {
+			if (m.find(openingHTagEnd)) {
 				if (m.end() < earliest) {
 					earliest = m.end();
 				}
@@ -130,6 +134,7 @@ public class Markdown {
 				if (j!=-1 && j<earliest) earliest = j;
 			}
 		}
+		assert earliest >= openingHTagEnd : "backwards?! "+earliest+" v "+openingHTagEnd;
 		return earliest;
 	}
 
