@@ -20,6 +20,7 @@ import com.winterwell.utils.io.CSVSpec;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.log.Log;
 import com.winterwell.utils.time.Dt;
+import com.winterwell.utils.web.WebUtils;
 import com.winterwell.utils.web.WebUtils2;
 
 /**
@@ -290,10 +291,9 @@ public class BuildJerbilWebSite extends BuildTask {
 			String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, fout));
 			if (match!=null) {
 				File pdf = FileUtils.changeType(out, "pdf");
-				Proc proc = new Proc("chrome-headless-render-pdf --url=file://"+out.getAbsolutePath()+" --pdf="+pdf.getAbsolutePath());
-				proc.start();
-				proc.waitFor();
-				proc.close();
+				try (Proc proc = WebUtils.renderToPdf(out, pdf)) {
+					proc.waitFor();	
+				}				
 				Log.d(LOGTAG, "Made "+pdf);
 			}
 		}
