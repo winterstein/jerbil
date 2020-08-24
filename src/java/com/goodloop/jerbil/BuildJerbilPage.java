@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import com.winterwell.utils.Dep;
 import com.winterwell.utils.Environment;
 import com.winterwell.utils.IReplace;
+import com.winterwell.utils.MathUtils;
 import com.winterwell.utils.Printer;
 import com.winterwell.utils.SimpleTemplateVars;
 import com.winterwell.utils.StrUtils;
@@ -116,6 +117,12 @@ public class BuildJerbilPage {
 			Markdown markdown = Dep.get(Markdown.class);
 			// NB set lazily to allow that config might change
 			markdown.sectionDivs = config.sectionDivs;
+			// Hack: allow page level sectionDivs override
+			if (var != null && var.containsKey("sectionDivs")) {
+				Object sd = var.get("sectionDivs");
+				markdown.sectionDivs = MathUtils.isNumber(sd)? (int) MathUtils.toNum(sd) 
+						: (Utils.yes(sd)? 2 : 0); 
+			}
 			srcPageHtml = markdown.render(srcPageNoSections);
 		}
 		
