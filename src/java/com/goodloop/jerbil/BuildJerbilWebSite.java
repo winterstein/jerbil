@@ -142,9 +142,9 @@ public class BuildJerbilWebSite extends BuildTask {
 	}
 
 	void doTask3_CSV(File csvFile) {
-		try {
-			CSVSpec spec = new CSVSpec();
-			CSVReader r = new CSVReader(csvFile,spec);
+		CSVSpec spec = new CSVSpec();
+		try (CSVReader r = new CSVReader(csvFile,spec)) {
+			r.setNumFields(-1);
 			// the 1st line MUST be column headers
 			String[] header = r.next();
 			// TODO case etc flexible header handling (as SoGive's csv code does)
@@ -164,7 +164,8 @@ public class BuildJerbilWebSite extends BuildTask {
 				doTask4_CSV_row(csvFile, header, mdtemplate, row, r.getRowNumber());
 			}
 		} catch(Exception ex) {
-			Log.e(ex+" from "+csvFile); // TODO better error handling in Jerbil??
+			Log.e(ex+" from "+csvFile); 
+			// TODO better error handling in Jerbil??
 		}
 	}
 
@@ -193,6 +194,29 @@ public class BuildJerbilWebSite extends BuildTask {
 				map.remove(k);
 			}
 		}
+		
+		// HACK names etc
+		hack_specialVars(map);				
+		
+		// ...normal
+		File out = getOutputFileForSource(csvFile);				
+		out = FileUtils.changeType(out, rowNum+FileUtils.safeFilename(row[0].trim(), false)+".html");		
+		File template = getTemplate(out);
+		assert template != null : "No html template?! "+webroot;
+		
+		// ...run
+		BuildJerbilPage bjp = new BuildJerbilPage(csvFile, mdtemplate, out, template);
+		// combine base vars and csv vars
+		Map<String, String> vars = new HashMap(config.var);
+		vars.putAll(map);		
+		bjp.setVars(vars);
+		// run
+		bjp.run();
+	}
+	
+	
+
+	private void hack_specialVars(HashMap<String, String> map) {
 		String name = Utils.or((String) map.get("worker"), " ");
 		if (name.startsWith("X")) {
 			return; // skip
@@ -217,6 +241,7 @@ public class BuildJerbilWebSite extends BuildTask {
 					"Home address",
 					"1 Tweed Avenue, Peebles, Edinburgh, EH45 8AS");
 		}
+	
 		if (details!=null) {
 			map.put("workerEmail", details.get("Email address"));
 			String address = details.get("Home address");
@@ -264,38 +289,6 @@ public class BuildJerbilWebSite extends BuildTask {
 			map.put("withWinterwell", "with Winterwell Associates Limited (Company Registration Number SC342991) and the employment was transferred to the Company on 31st July 2018");
 		} else {
 			map.put("withWinterwell","");
-		}		
-		// end HACK
-		
-		
-		// ...normal
-		File out = getOutputFileForSource(csvFile);				
-		out = FileUtils.changeType(out, rowNum+FileUtils.safeFilename(row[0].trim(), false)+".html");		
-		File template = getTemplate(out);
-		assert template != null : "No html template?! "+webroot;
-		
-		// ...run
-		BuildJerbilPage bjp = new BuildJerbilPage(csvFile, mdtemplate, out, template);
-		// combine base vars and csv vars
-		Map<String, String> vars = new HashMap(config.var);
-		vars.putAll(map);		
-		String ww = vars.get("withWinterwell");
-		bjp.setVars(vars);
-		// run
-		bjp.run();
-
-		// HACK make a pdf too
-		if (config.makePdfPattern != null) {
-			String[] ps = config.makePdfPattern.split(",\\w*");
-			final File fout = out;
-			String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, fout));
-			if (match!=null) {
-				File pdf = FileUtils.changeType(out, "pdf");
-				try (Proc proc = WebUtils.renderToPdf(out, pdf)) {
-					proc.waitFor();	
-				}				
-				Log.d(LOGTAG, "Made "+pdf);
-			}
 		}
 	}
 

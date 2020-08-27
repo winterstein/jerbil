@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.7.11";
+	public static final String VERSION = "0.8.0";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -21,6 +21,9 @@ public class JerbilConfig {
 		this.projectdir = projectdir;
 		return this;
 	}
+	
+	@Option(description="Apply DecimalFormat.java formatting to numerical variables e.g. `#,###.##` gives comma-separated 1,000s and 2 decimal places.")
+	public String numberFormat;
 	
 	@Override
 	public String toString() {
@@ -87,8 +90,13 @@ public class JerbilConfig {
 	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
 	public boolean useJS;
 
-	@Option(description="Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
+	@Option(description="(experimental) Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
 	public String makePdfPattern;
+	
+	// HACK share certificates
+	@Option(description="(experimental) Extra options to pass to the pdf generator")
+	public String makePdfOptions="--include-background";
+
 
 	@Option(description="If set, create divs to enclose the sections implicitly created by headers h1, h2 ...upto this number.\n"
 			+"You can also set this in individual page source files, using a sectionDivs: boolean|int parameter.")

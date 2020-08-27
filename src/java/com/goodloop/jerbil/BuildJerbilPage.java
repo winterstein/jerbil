@@ -3,7 +3,10 @@ package com.goodloop.jerbil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +18,7 @@ import com.winterwell.utils.Environment;
 import com.winterwell.utils.IReplace;
 import com.winterwell.utils.MathUtils;
 import com.winterwell.utils.Printer;
+import com.winterwell.utils.Proc;
 import com.winterwell.utils.SimpleTemplateVars;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
@@ -23,6 +27,7 @@ import com.winterwell.utils.containers.Containers;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.log.Log;
 import com.winterwell.utils.time.Time;
+import com.winterwell.utils.web.WebUtils;
 import com.winterwell.utils.web.WebUtils2;
 import com.winterwell.web.fields.SField;
 
@@ -86,6 +91,23 @@ public class BuildJerbilPage {
 		out.getParentFile().mkdir();
 		FileUtils.write(out, html);
 		Log.i(LOGTAG, "Made "+out);
+		
+		// HACK make a pdf too?
+		run2_pdf();
+	}
+
+	private void run2_pdf() {
+		if (config.makePdfPattern == null) return;
+		String[] ps = config.makePdfPattern.split(",\\w*");
+		final File fout = out;
+		String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, fout));
+		if (match!=null) {
+			File pdf = FileUtils.changeType(out, "pdf");
+			try (Proc proc = WebUtils.renderToPdf_usingChrome(out, pdf, config.makePdfOptions)) {
+				proc.waitFor();	
+			}				
+			Log.d(LOGTAG, "Made "+pdf);
+		}		
 	}
 
 	/**
@@ -288,6 +310,9 @@ public class BuildJerbilPage {
 		}
 		
 		SimpleTemplateVars stv = new SimpleTemplateVars(var);
+		if ( ! Utils.isBlank(config.numberFormat)) {
+			stv.setNumberFormat(new DecimalFormat(config.numberFormat));
+		}
 		stv.setUseJS(config.useJS);
 		String html2 = stv.process(plainTextOrHtml);
 		return html2;
@@ -315,6 +340,9 @@ public class BuildJerbilPage {
 
 	private void checkTemplate(String html) {
 		if ( ! html.contains("$contents") && ! html.contains("$nocontents")) {
+			if (src.getName().endsWith(".csv")) {
+				return; // dont enforce this for csv 
+			}
 			throw new IllegalStateException("The template file MUST contain the $contents or $nocontents variable: "+template);
 		}
 	}
