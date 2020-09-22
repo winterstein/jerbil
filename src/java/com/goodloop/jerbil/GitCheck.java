@@ -88,7 +88,7 @@ public class GitCheck extends TimerTask {
 	
 	public static void main(String[] args) {
 		// TODO an option for the frequency
-		GitCheckConfig config = ConfigFactory.get().getConfigBuilder(GitCheckConfig.class).setFromMain(args).get();		
+		GitCheckConfig config = ConfigFactory.get().setArgs(args).getConfigBuilder(GitCheckConfig.class).setFromMain(args).get();		
 		GitCheck gc = new GitCheck(FileUtils.getWorkingDirectory(), config.dt);
 		gc.config = config;
 		Printer.out(gc.config);
