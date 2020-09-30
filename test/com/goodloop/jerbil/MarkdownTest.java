@@ -18,6 +18,21 @@ public class MarkdownTest {
 		}
 	}
 	
+	@Test
+	public void testRenderWithout_keepUl() {
+		Markdown md = new Markdown();
+		String string = "Developer work includes:\n"
+				+ "\n"
+				+ "- Software development.\n"
+				+ "- Testing.\n"
+				+ "- Input into software and product design.\n"
+				+ "- Work on technical operations and infrastructure.\n"
+				+ "- Reporting on KPIs and other relevant metrics.\n"
+				+ "- Providing technical support as appropriate.";
+		String htmlFragment = md.renderWithoutWrapper(string);
+		assert htmlFragment.contains("<ul>") : htmlFragment;
+		assert htmlFragment.contains("</ul>") : htmlFragment;
+	}
 	
 	@Test
 	public void testSectionDivs_emptySectionClose() {			
@@ -71,7 +86,7 @@ public class MarkdownTest {
 			String htmlBit = md.renderWithoutWrapper(mdt);
 //			System.out.println(html);
 //			System.out.println(htmlBit);
-			assert htmlBit.equals("Hello World");
+			assert htmlBit.equals("Hello World") : htmlBit;
 		}
 	}
 

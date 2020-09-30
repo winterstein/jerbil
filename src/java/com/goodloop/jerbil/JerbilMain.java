@@ -131,7 +131,7 @@ public class JerbilMain {
 		System.out.println("----------------------------------------");
 		System.out.println("");
 		ConfigBuilder cb = new ConfigBuilder(new JerbilConfig());
-		System.out.println(cb.getOptionsMessage("[file/directory path to process] If no path is given, defaults to the pages directory"));
+		System.out.println(cb.getOptionsMessage("[path to website directory] If no path is given, defaults to the current directory"));
 	}
 
 	static void doUpdateJar() {

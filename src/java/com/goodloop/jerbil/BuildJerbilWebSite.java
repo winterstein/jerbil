@@ -93,22 +93,6 @@ public class BuildJerbilWebSite extends BuildTask {
 			boolean ok = filterFile(f);
 			if ( ! ok) continue;
 			
-			// "mail merge"?
-			if ( f.getName().endsWith(".csv")) {
-				doTask3_CSV(f);
-				continue;
-			}
-			// a stray binary or other file? just copy it
-			String type = FileUtils.getType(f).toLowerCase();
-			// see https://fileinfo.com/filetypes/text
-			if ( ! type.isEmpty() && ! "txt md markdown text html htm rtf wiki me 1st ascii asc eml".contains(type)) {
-				Log.d(LOGTAG, "Copy as-is "+f);
-				String relpath = FileUtils.getRelativePath(f, pages);		
-				File out = new File(webroot, relpath);
-				out.getParentFile().mkdirs();
-				FileUtils.copy(f, out);
-				continue;
-			}
 			doTask3_oneFile(f);
 		}
 	}
@@ -129,6 +113,23 @@ public class BuildJerbilWebSite extends BuildTask {
 	}
 
 	void doTask3_oneFile(File f) {
+		// "mail merge"?
+		if ( f.getName().endsWith(".csv")) {
+			doTask3_CSV(f);
+			return;
+		}
+		// a stray binary or other file? just copy it
+		String type = FileUtils.getType(f).toLowerCase();
+		// see https://fileinfo.com/filetypes/text
+		if ( ! type.isEmpty() && ! "txt md markdown text html htm rtf wiki me 1st ascii asc eml".contains(type)) {
+			Log.d(LOGTAG, "Copy as-is "+f);
+			String relpath = FileUtils.getRelativePath(f, pages);		
+			File out = new File(webroot, relpath);
+			out.getParentFile().mkdirs();
+			FileUtils.copy(f, out);
+			return;
+		}
+
 		// Process a file!
 		File out = getOutputFileForSource(f);
 		
@@ -227,6 +228,7 @@ public class BuildJerbilWebSite extends BuildTask {
 		if (name.contains("Rainey")) name = "Rainey";
 		if (name.contains("Scurlock")) name = "Scurlock";
 		CSVReader r = new CSVReader(new File(config.getPagesDir(), "/job-contracts/contact-details.csv"));
+		r.setNumFields(-1);
 		Iterable<Map<String, String>> maps = r.asListOfMaps();
 		Map<String, String> details = null;
 		for (Map<String, String> m : maps) {

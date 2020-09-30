@@ -35,7 +35,7 @@ public class BuildJerbilWebSiteTest {
 		assert jcold != config;
 	}
 	
-//	@Test convenience for a filtered run - not a test
+//	@Test // convenience for a filtered run - not a test
 	public void testDoTask3_oneFile_DWjobContract() {
 		JerbilConfig config = new JerbilConfig();
 		config.makePdfPattern="**/job-contracts/*.html,**/directors/*.html";

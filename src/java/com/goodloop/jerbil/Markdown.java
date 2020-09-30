@@ -146,8 +146,10 @@ public class Markdown {
 	public String renderWithoutWrapper(String string) {
 		// ??for speed: check if its plain text?
 		String mds0 = render(string);
-		String mds = mds0.replaceFirst("^<[^>]+>", "");
-		mds = mds.replaceFirst("</[a-zA-Z]+>$", "");
+		// chop off the wrapper tag - but only if it is a div or p!
+		// e.g. a list tag <ul>...</ul> should be left alone
+		String mds = mds0.replaceFirst("^<(div|p)[^>]*>", "");
+		mds = mds.replaceFirst("</(div|p)>$", "");
 		return mds.trim();
 	}
 
