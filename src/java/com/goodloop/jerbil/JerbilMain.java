@@ -130,7 +130,8 @@ public class JerbilMain {
 		System.out.println("Jerbil website builder, version "+JerbilConfig.VERSION+" "+Utils.or(getMyJar(),""));
 		System.out.println("----------------------------------------");
 		System.out.println("");
-		System.out.println(new ConfigBuilder(new JerbilConfig()).getOptionsMessage());
+		ConfigBuilder cb = new ConfigBuilder(new JerbilConfig());
+		System.out.println(cb.getOptionsMessage("[file/directory path to process] If no path is given, defaults to the pages directory"));
 	}
 
 	static void doUpdateJar() {
