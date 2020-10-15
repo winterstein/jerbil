@@ -1,6 +1,8 @@
 package com.goodloop.jerbil;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +59,14 @@ class JerbilLinkResolver implements LinkResolver {
 			Log.d("linkresolver", Printer.str(Arrays.asList(url))+" - no match");
 			return null;
 		}
-		String rpath = FileUtils.getRelativePath(match.get(0), config.getPagesDir());
+		String rpath;
+		try {
+			rpath = FileUtils.getRelativePath(match.get(0), config.getPagesDir());
+		} catch (IllegalArgumentException e) {
+			// It's odd but OK to reference a webroot file
+			rpath = FileUtils.getRelativePath(match.get(0), config.getWebRootDir());
+		}
+		
 		File htmlpath = FileUtils.changeType(new File(rpath), "html");			
 		String url2 = "/"+htmlpath; // otherwise we get the full-web-path handled as a relative path
 		// NB: relative paths would be nice - but would require knowing the relative path for the doc (a faff to get here)
