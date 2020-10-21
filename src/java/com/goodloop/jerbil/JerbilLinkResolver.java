@@ -35,9 +35,9 @@ class JerbilLinkResolver implements LinkResolver {
 	
 	@Override
 	public ResolvedLink resolveLink(Node arg0, LinkResolverContext arg1, ResolvedLink arg2) {		
-		Document doc = arg1.getDocument();
-		String target = arg2.getTarget();
-		LinkType lt = arg2.getLinkType();
+//		Document doc = arg1.getDocument();
+//		String target = arg2.getTarget();
+//		LinkType lt = arg2.getLinkType();
 		String url = arg2.getUrl(); // e.g. Publishers-How-to-install-Good-Loop-on-your-site
 		Log.d("linkresolver", url);
 		// protocol or abs path?
