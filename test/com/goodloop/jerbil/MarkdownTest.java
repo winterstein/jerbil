@@ -1,12 +1,9 @@
 package com.goodloop.jerbil;
 
-import static org.junit.Assert.*;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.winterwell.utils.Dep;
-import com.winterwell.utils.DepContext;
 import com.winterwell.utils.web.WebUtils;
 
 public class MarkdownTest {

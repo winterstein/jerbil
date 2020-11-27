@@ -1,7 +1,5 @@
 import java.io.IOException;
 
-import com.goodloop.jerbil.JerbilMain;
-
 /**
  * Command line convenience for GitCheck
  * @author daniel

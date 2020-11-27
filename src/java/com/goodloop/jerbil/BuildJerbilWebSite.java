@@ -10,8 +10,6 @@ import java.util.Map;
 
 import com.winterwell.bob.BuildTask;
 import com.winterwell.utils.Printer;
-import com.winterwell.utils.Proc;
-import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
 import com.winterwell.utils.containers.ArrayMap;
 import com.winterwell.utils.containers.Containers;
@@ -19,9 +17,6 @@ import com.winterwell.utils.io.CSVReader;
 import com.winterwell.utils.io.CSVSpec;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.log.Log;
-import com.winterwell.utils.time.Dt;
-import com.winterwell.utils.web.WebUtils;
-import com.winterwell.utils.web.WebUtils2;
 
 /**
  * Build a Jerbil website.

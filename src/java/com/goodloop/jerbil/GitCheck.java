@@ -4,13 +4,10 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.eclipse.jetty.util.ajax.JSON;
-
 import com.winterwell.bob.tasks.GitTask;
 import com.winterwell.utils.Printer;
 import com.winterwell.utils.Proc;
 import com.winterwell.utils.Utils;
-import com.winterwell.utils.io.ConfigBuilder;
 import com.winterwell.utils.io.ConfigFactory;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.log.Log;

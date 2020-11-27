@@ -1,16 +1,12 @@
 package com.goodloop.jerbil;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.winterwell.utils.Dep;
-import com.winterwell.utils.Printer;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.containers.ArrayMap;
 import com.winterwell.utils.io.FileUtils;
