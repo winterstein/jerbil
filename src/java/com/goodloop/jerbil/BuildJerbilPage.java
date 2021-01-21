@@ -99,13 +99,14 @@ public class BuildJerbilPage {
 		String[] ps = config.makePdfPattern.split(",\\w*");
 		final File fout = out;
 		String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, fout));
-		if (match!=null) {
-			File pdf = FileUtils.changeType(out, "pdf");
-			try (Proc proc = WebUtils.renderToPdf_usingChrome(out, pdf, config.makePdfOptions)) {
-				proc.waitFor();	
-			}				
-			Log.d(LOGTAG, "Made "+pdf);
-		}		
+		if (match==null) {
+			return;
+		}
+		File pdf = FileUtils.changeType(out, "pdf");
+		try (Proc proc = WebUtils.renderToPdf_usingChrome(out, pdf, config.makePdfOptions)) {
+			proc.waitFor();	
+		}				
+		Log.d(LOGTAG, "Made "+pdf);
 	}
 
 	/**

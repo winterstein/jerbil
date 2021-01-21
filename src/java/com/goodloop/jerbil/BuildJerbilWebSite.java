@@ -100,6 +100,9 @@ public class BuildJerbilWebSite extends BuildTask {
 	private boolean filterFile(File f) {
 		if (Utils.isBlank(config.filter)) return true;
 		String[] ps = config.filter.split(",\\w*");
+		if (ps.length==1) {
+			
+		}
 		String match = Containers.first(Arrays.asList(ps), p -> FileUtils.globMatch(p, f));
 		if (match==null) {
 			return false;

@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.8.3";
+	public static final String VERSION = "0.8.4";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -84,13 +84,13 @@ public class JerbilConfig {
 	@Option(description="If you just wish to process a single file. See also -filter", tokens="-i,-inputFile")
 	public File inputFile;
 	
-	@Option(description="Usually unset. Glob pattern if you just wish to process just a set of files eg \"*nda*\"")
+	@Option(description="Usually unset. Glob pattern if you just wish to process just a set of files eg \"**nda*\". Unless the pattern starts **, the glob will only match on the filename and NOT directories.")
 	public String filter;
 
 	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
 	public boolean useJS;
 
-	@Option(description="(experimental) Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
+	@Option(tokens="-makePdfPattern,-pdf", description="(experimental) Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
 	public String makePdfPattern;
 	
 	// HACK share certificates
