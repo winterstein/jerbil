@@ -122,6 +122,13 @@ public class BuildJerbilPage {
 			var.put("title", StrUtils.toTitleCasePlus(FileUtils.getBasename(src)));
 		}
 
+		// normalise quotes
+		if (config.smartyQuotes) {
+			// TODO
+		} else {
+			srcPage = StrUtils.normalisePunctuation(srcPage);
+		}
+		
 		// Strip out variables
 		srcPage = chopSetVars(srcPage, var);
 		// override markdown key:value header values? use-case: csv

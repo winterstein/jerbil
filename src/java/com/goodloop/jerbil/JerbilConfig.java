@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.8.4";
+	public static final String VERSION = "0.8.5";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -101,6 +101,9 @@ public class JerbilConfig {
 	@Option(description="If set, create divs to enclose the sections implicitly created by headers h1, h2 ...upto this number.\n"
 			+"You can also set this in individual page source files, using a sectionDivs: boolean|int parameter.")
 	public int sectionDivs;
+
+	@Option(description="If set, use left/right quote characters (warning: these don't render properly in all fonts). Otherwise normalise punctuation to standard quotes and dashes.")
+	public boolean smartyQuotes;
 	
 	public File getWebRootDir() {
 		return new File(projectdir, webroot);
