@@ -98,8 +98,9 @@ public class BuildJerbilWebSite extends BuildTask {
 	 * @return usually true for "do this"
 	 */
 	private boolean filterFile(File f) {
-		if (Utils.isBlank(config.filter)) return true;
-		String[] ps = config.filter.split(",\\w*");
+		String filter = config.getFilter();
+		if (Utils.isBlank(filter)) return true;
+		String[] ps = filter.split(",\\w*");
 		if (ps.length==1) {
 			
 		}
@@ -293,8 +294,19 @@ public class BuildJerbilWebSite extends BuildTask {
 	}
 
 	protected File getOutputFileForSource(File f) {
-		String relpath = FileUtils.getRelativePath(f, pages);		
-		File out = new File(webroot, relpath);		
+		File out;
+		try {
+			String relpath = FileUtils.getRelativePath(f, pages);		
+			out = new File(webroot, relpath);
+		} catch (IllegalArgumentException notInPages) {
+			// allow for "user said _this_ file"
+			if (f.equals(config.inputFile)
+					&& ! "html".equals(FileUtils.getType(f))) {
+				out = f;
+			} else {
+				throw notInPages;
+			}
+		}
 		out = FileUtils.changeType(out, "html");
 		return out;
 	}

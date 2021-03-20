@@ -13,7 +13,7 @@ import com.winterwell.utils.time.TUnit;
 
 public class JerbilConfig {
 	
-	public static final String VERSION = "0.8.5";
+	public static final String VERSION = "0.8.6";
 
 	static final String DEFAULT_WEBROOT =  "webroot";
 	
@@ -90,7 +90,8 @@ public class JerbilConfig {
 	@Option(description="If true, support js in templates, e.g. ${foo? 'bar':''}")
 	public boolean useJS;
 
-	@Option(tokens="-makePdfPattern,-pdf", description="(experimental) Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made.")
+	@Option(tokens="-makePdfPattern,-pdf", 
+			description="(experimental) Glob pattern eg \"*contract*.txt\" for files to convert into pdf. If unset (the default), then pdfs are not made. This will also set -filter, if it's unset.")
 	public String makePdfPattern;
 	
 	// HACK share certificates
@@ -119,5 +120,12 @@ public class JerbilConfig {
 	public File getTemplatesDir() {
 		File td = new File(projectdir, "templates");
 		return td.isDirectory()? td : null;
+	}
+
+	public String getFilter() {
+		if (filter==null && makePdfPattern!=null) {
+			return makePdfPattern;
+		}
+		return filter;
 	}
 }

@@ -86,7 +86,8 @@ public class BuildJerbilPage {
 		boolean applyMarkdown = ! (FileUtils.getType(src).equals("html") || FileUtils.getType(src).equals("htm"));
 		html = run2_render(applyMarkdown, page, html, baseVars);
 				
-		out.getParentFile().mkdir();
+		File outDir = out.getParentFile();
+		if (outDir != null) outDir.mkdirs(); // NB: for a single input file, outdir may be null
 		FileUtils.write(out, html);
 		Log.i(LOGTAG, "Made "+out);
 		
