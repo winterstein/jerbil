@@ -10,6 +10,7 @@ import com.winterwell.utils.containers.Containers;
 import com.winterwell.utils.io.Option;
 import com.winterwell.utils.time.Dt;
 import com.winterwell.utils.time.TUnit;
+import com.winterwell.utils.web.WebUtils2;
 
 public class JerbilConfig {
 	
@@ -28,7 +29,7 @@ public class JerbilConfig {
 	@Override
 	public String toString() {
 		try {
-			return "JerbilConfig "+JSON.toString(Containers.objectAsMap(this));
+			return "JerbilConfig "+WebUtils2.generateJSON(Containers.objectAsMap(this));
 		} catch(Throwable ex) {
 			return super.toString();
 		}
