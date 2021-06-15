@@ -66,7 +66,7 @@ public class JerbilConfig {
 	File styleSrcDir;
 	
 	@Option(description = "If set, a command to compile the style files. e.g. `lessc $input style/$output`" 
-			+"\n   $input and $output will be replaced with the input file (full path), and filename.css")
+			+"\n	$input will be replaced with the input file (full path).\n	$output is replaced with filename.css.\n	The command is run from the webroot directory, so output is relative to that.")
 	public String styleCompiler;
 
 	public File getPagesDir() {
