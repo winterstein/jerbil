@@ -1,0 +1,30 @@
+*.class
+
+# not allowing any HTML files
+*.html
+# ALLOWING only the 'template.html' file
+!template.html
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/bin/
+
+# Allowing jerbil-all.jar because headless servers need it to render md to html
+!jerbil-all.jar
+bob.log
+boblog
+node_modules
+package-lock.json
+web/build
+config/version.properties
+dependencies
+pom.bob.xml
+jerbil-all.jar
