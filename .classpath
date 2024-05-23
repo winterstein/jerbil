@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="dependencies/opentest4j.jar"/>
 	<classpathentry kind="lib" path="dependencies/playwright.jar"/>
 	<classpathentry kind="lib" path="dependencies/gson.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-servlet-api-4.0.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

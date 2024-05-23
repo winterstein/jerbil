@@ -40,6 +40,11 @@ class JerbilLinkResolver implements LinkResolver {
 		if (url.startsWith("http") || url.startsWith("/") || url.startsWith("#")) {
 			return arg2;
 		}
+		// file type? then leave it alone (apart from .md)
+		String ftype = FileUtils.getType(url);
+		if (ftype!=null && ! ftype.isEmpty() && ! "md".contains(ftype)) {
+			return arg2;
+		}
 		// resolve if we can
 		String url2 = resolveLink2(url);
 		if (url2 != null) {
