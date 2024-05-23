@@ -22,9 +22,10 @@ public class BuildJerbil extends BuildWinterwellProject {
 		super("jerbil");
 		setIncSrc(true);
 		setMainClass("Jerbil");
-		setVersion("1.2.5"); // copy JerbilConfig.VERSION
+		setVersion("1.2.6"); // copy JerbilConfig.VERSION
 		setMakeFatJar(true);
-		setScpToWW(true); // NB: test first
+		setScpToWW(false); // NB: test first
+//		setScpToWW(true); // NB: test first
 	}
 
 	
@@ -34,6 +35,8 @@ public class BuildJerbil extends BuildWinterwellProject {
 		
 		MavenDependencyTask mdt = new MavenDependencyTask();
 		mdt.addDependency("com.microsoft.playwright", "playwright", "1.28.1");
+
+		mdt.addDependency("org.eclipse.jetty.toolchain", "jetty-jakarta-servlet-api", "5.0.2");
 		
 		// Flxemark Maven just downloads a bunch of _empty_ jars!
 //		MavenDependencyTask mdt = new MavenDependencyTask();

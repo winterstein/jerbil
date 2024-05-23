@@ -6,8 +6,6 @@ import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.servlet.http.HttpServlet;
-
 import com.winterwell.bob.Bob;
 import com.winterwell.bob.tasks.Classpath;
 import com.winterwell.utils.Dep;
@@ -191,14 +189,14 @@ public class JerbilMain {
 		jl.setWebXmlFile(null);
 		jl.setCanShutdown(false);
 		jl.setup();				
-		HttpServlet fileServer = new FileServlet(webroot);
+		FileServlet fileServer = new FileServlet(webroot);
 		// servlets
-		jl.addServlet("/manifest", new HttpServletWrapper(SimpleManifestServlet.class));
+		jl.addServlet("/manifest", SimpleManifestServlet.class);
 		if (config.editor) {
-			jl.addServlet("/pages/*", new HttpServletWrapper(PageEditorServlet.class));
+			jl.addServlet("/pages/*", PageEditorServlet.class);
 			FileServlet edfileServer = new FileServlet(new File("/home/daniel/winterwell/jerbil/web")); // HACK FIXME
 			edfileServer.setChopServlet(true);
-			jl.addServlet("/editor/*", edfileServer);		
+			jl.addServlet("/editor/*", edfileServer);
 		}
 		jl.addServlet("/*", fileServer);		
 		
