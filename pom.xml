@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>winterwell</groupId>
+  <artifactId>jerbil</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>Jerbil</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+  
+  <dependencies>
+
+	<dependency><groupId>good-loop.com</groupId>
+  <artifactId>winterwell.utils</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+
+	<dependency><groupId>good-loop.com</groupId>
+  <artifactId>winterwell.web</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+
+	<dependency><groupId>good-loop.com</groupId>
+  <artifactId>winterwell.bob</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+
+	<classpathentry kind="lib" path="lib/flexmark-all-lib.jar"/>
+	<classpathentry kind="lib" path="dependencies/driver.jar"/>
+	<classpathentry kind="lib" path="dependencies/driver-bundle.jar"/>
+	<classpathentry kind="lib" path="dependencies/opentest4j.jar"/>
+	<classpathentry kind="lib" path="dependencies/playwright.jar"/>
+	<classpathentry kind="lib" path="dependencies/gson.jar"/>
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>2.1.0-alpha1</version>
+</dependency>
+  </dependencies>
+  
+  <build>
+ 
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+
+    <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.2.3</version>
+    <configuration>
+        <argLine>-ea --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.security=ALL-UNNAMED --add-opens java.base/sun.security.pkcs=ALL-UNNAMED --add-opens java.base/java.lang.ref=ALL-UNNAMED</argLine>
+    </configuration>
+</plugin>
+
+<!-- https://books.sonatype.com/mvnref-book/reference/assemblies-sect-basics.html -->
+<plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <executions>
+                    <execution>
+                        <id>create-executable-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>
+                                    jar-with-dependencies
+                                </descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.goodloop.jerbil.JerbilMain</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>        
+    </plugins>
+  </build>
+</project>
