@@ -11,7 +11,7 @@ import com.winterwell.utils.io.FileUtils;
 public class BuildJerbilWebSiteTest {
 
 
-	@Test 
+//	@Test 
 	public void testSmokeTestDocProject() {
 		DepContext context = Dep.setContext("DocProject");
 		

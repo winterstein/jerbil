@@ -28,3 +28,4 @@ config/version.properties
 dependencies
 pom.bob.xml
 jerbil-all.jar
+/target/

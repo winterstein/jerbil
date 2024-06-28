@@ -152,6 +152,7 @@ public class JerbilMain {
 			if (config==null) config = new JerbilConfig();
 			cb = new ConfigBuilder(config);
 		}		
+		System.out.println("");
 		String optionsMessage = cb.getOptionsMessage("[path to website directory] If no path is given, defaults to the current directory");
 		System.out.println(optionsMessage);
 	}

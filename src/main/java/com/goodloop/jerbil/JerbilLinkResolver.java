@@ -7,10 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.vladsch.flexmark.ast.Node;
+import org.jetbrains.annotations.NotNull;
+
 import com.vladsch.flexmark.html.LinkResolver;
+import com.vladsch.flexmark.html.renderer.LinkResolverBasicContext;
 import com.vladsch.flexmark.html.renderer.LinkResolverContext;
 import com.vladsch.flexmark.html.renderer.ResolvedLink;
+import com.vladsch.flexmark.util.ast.Node;
 import com.winterwell.utils.Dep;
 import com.winterwell.utils.Printer;
 import com.winterwell.utils.StrUtils;
@@ -29,29 +32,31 @@ class JerbilLinkResolver implements LinkResolver {
 	
 	Map<String,String> urlForLink = new HashMap();
 	
+
 	@Override
-	public ResolvedLink resolveLink(Node arg0, LinkResolverContext arg1, ResolvedLink arg2) {		
+	public @NotNull ResolvedLink resolveLink(Node node, LinkResolverBasicContext context, ResolvedLink link) 
+	{
 //		Document doc = arg1.getDocument();
 //		String target = arg2.getTarget();
 //		LinkType lt = arg2.getLinkType();
-		String url = arg2.getUrl(); // e.g. Publishers-How-to-install-Good-Loop-on-your-site
+		String url = link.getUrl(); // e.g. Publishers-How-to-install-Good-Loop-on-your-site
 		Log.d("linkresolver", url);
 		// protocol or abs path?
 		if (url.startsWith("http") || url.startsWith("/") || url.startsWith("#")) {
-			return arg2;
+			return link;
 		}
 		// file type? then leave it alone (apart from .md)
 		String ftype = FileUtils.getType(url);
 		if (ftype!=null && ! ftype.isEmpty() && ! "md".contains(ftype)) {
-			return arg2;
+			return link;
 		}
 		// resolve if we can
 		String url2 = resolveLink2(url);
 		if (url2 != null) {
-			ResolvedLink resolved = arg2.withUrl(url2);
+			ResolvedLink resolved = link.withUrl(url2);
 			return resolved;
 		}		
-		return arg2;
+		return link;
 	}
 
 	public String resolveLink2(String url) {		

@@ -5,14 +5,17 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vladsch.flexmark.ast.Node;
+import org.jetbrains.annotations.NotNull;
+
 import com.vladsch.flexmark.ext.anchorlink.AnchorLinkExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.ext.wikilink.WikiLinkExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.options.MutableDataSet;
+import com.vladsch.flexmark.util.ast.Document;
+import com.vladsch.flexmark.util.data.DataKey;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.log.Log;
 import com.winterwell.utils.web.WebUtils;
@@ -50,13 +53,13 @@ public class Markdown {
 
         // uncomment to convert soft-breaks to hard breaks
         //options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
-        options.set(HtmlRenderer.GENERATE_HEADER_ID, true);
+        options.set(HtmlRenderer.GENERATE_HEADER_ID, Boolean.TRUE);
         
         Parser parser = Parser.builder(options).build();
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
 
         // You can re-use parser and renderer instances
-        Node document = parser.parse(page);
+		Document document = parser.parse(page);
         String html = renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"
   
         if (sectionDivs <= 0) {
