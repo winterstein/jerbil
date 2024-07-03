@@ -23,4 +23,8 @@ mvn package -DskipTests
 
 # no js
 
+# copy to www server
+ln -s `ls target/*dependencies.jar` jerbil-all.jar
+scp jerbil-all.jar aberdeen:~/winterwell-www/software
+
 # ./build-deploy2.sh $PROJECT
