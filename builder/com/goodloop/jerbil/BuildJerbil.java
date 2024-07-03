@@ -22,7 +22,7 @@ public class BuildJerbil extends BuildWinterwellProject {
 		super("jerbil");
 		setIncSrc(true);
 		setMainClass("Jerbil");
-		setVersion("1.2.6"); // copy JerbilConfig.VERSION
+		setVersion("1.2.6"); // copy JerbilConfig.VERSION also pom.xml
 		setMakeFatJar(true);
 		setScpToWW(false); // NB: test first
 //		setScpToWW(true); // NB: test first
