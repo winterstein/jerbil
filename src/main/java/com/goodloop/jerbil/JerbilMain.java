@@ -50,6 +50,7 @@ public class JerbilMain {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
+		Log.i(LOGTAG, "Jerbil v "+JerbilConfig.VERSION);
 		Environment.get().put(new SField("jerbil.version"), JerbilConfig.VERSION);		
 
 		JerbilConfig config;
